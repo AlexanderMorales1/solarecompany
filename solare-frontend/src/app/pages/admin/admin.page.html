@@ -1,0 +1,108 @@
+<div class="mx-auto max-w-6xl px-4 py-8">
+  <h1 class="text-2xl font-bold">Administración</h1>
+  <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+    CRUD de productos e inventario. Promociones vía
+    <a
+      href="http://localhost:8080/api/swagger-ui.html"
+      target="_blank"
+      rel="noopener"
+      class="underline"
+      >Swagger</a
+    >
+    (<code>/admin/discounts</code>).
+  </p>
+
+  @if (msg()) {
+    <p class="mt-3 text-sm text-amber-800 dark:text-amber-200">{{ msg() }}</p>
+  }
+
+  <section class="mt-8 rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
+    <h2 class="font-semibold">Nuevo producto</h2>
+    <form class="mt-4 grid gap-3 md:grid-cols-2" [formGroup]="form" (ngSubmit)="create()">
+      <input
+        formControlName="name"
+        placeholder="Nombre"
+        class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+      />
+      <select formControlName="brandCode" class="rounded border border-slate-300 px-3 py-2 dark:bg-slate-800">
+        <option value="FERRATI">Ferrati</option>
+        <option value="RAYBAN">Ray-Ban</option>
+      </select>
+      <select formControlName="productType" class="rounded border border-slate-300 px-3 py-2 dark:bg-slate-800">
+        <option value="CASUAL">Casual</option>
+        <option value="DEPORTIVO">Deportivo</option>
+      </select>
+      <select formControlName="gender" class="rounded border border-slate-300 px-3 py-2 dark:bg-slate-800">
+        <option value="HOMBRE">Hombre</option>
+        <option value="MUJER">Mujer</option>
+      </select>
+      <input
+        type="number"
+        formControlName="priceCop"
+        class="rounded border border-slate-300 px-3 py-2 dark:bg-slate-800"
+      />
+      <input
+        type="number"
+        formControlName="stock"
+        class="rounded border border-slate-300 px-3 py-2 dark:bg-slate-800"
+      />
+      <input
+        formControlName="imageUrl"
+        class="md:col-span-2 rounded border border-slate-300 px-3 py-2 dark:bg-slate-800"
+      />
+      <input
+        formControlName="categorySlugs"
+        placeholder="slugs separados por coma"
+        class="md:col-span-2 rounded border border-slate-300 px-3 py-2 dark:bg-slate-800"
+      />
+      <label class="flex items-center gap-2 md:col-span-2">
+        <input type="checkbox" formControlName="featured" />
+        Destacado
+      </label>
+      <textarea
+        formControlName="description"
+        rows="2"
+        class="md:col-span-2 rounded border border-slate-300 px-3 py-2 dark:bg-slate-800"
+      ></textarea>
+      <button
+        type="submit"
+        [disabled]="form.invalid"
+        class="rounded-xl bg-[#FFF52D] px-4 py-2 font-semibold text-black disabled:opacity-50"
+      >
+        Crear
+      </button>
+    </form>
+  </section>
+
+  <section class="mt-10">
+    <h2 class="font-semibold">Inventario</h2>
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-slate-700">
+            <th class="py-2">ID</th>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of list(); track p.id) {
+            <tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2">{{ p.id }}</td>
+              <td>{{ p.name }}</td>
+              <td>{{ p.brandCode }}</td>
+              <td>{{ p.stock }}</td>
+              <td>{{ p.priceCop | copCurrency }}</td>
+              <td>
+                <button type="button" (click)="remove(p.id)" class="text-red-600 underline">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

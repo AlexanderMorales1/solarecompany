@@ -1,0 +1,70 @@
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, map, switchMap } from 'rxjs';
+import { Product } from '../../models/product.model';
+import { CopCurrencyPipe } from '../../pipes/cop-currency.pipe';
+import { CartService } from '../../services/cart.service';
+import { ProductService } from '../../services/product.service';
+
+@Component({
+  selector: 'app-product-detail',
+  standalone: true,
+  imports: [AsyncPipe, CopCurrencyPipe],
+  templateUrl: './product-detail.page.html',
+})
+export class ProductDetailPage {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly products = inject(ProductService);
+  private readonly cart = inject(CartService);
+
+  protected readonly qty = signal(1);
+  protected readonly busy = signal(false);
+  protected readonly msg = signal<string | null>(null);
+
+  protected readonly product$: Observable<Product> = this.route.paramMap.pipe(
+    map((p) => Number(p.get('id'))),
+    switchMap((id) => this.products.get(id)),
+  );
+
+  inc(): void {
+    this.qty.update((q) => q + 1);
+  }
+
+  dec(): void {
+    this.qty.update((q) => Math.max(1, q - 1));
+  }
+
+  addToCart(p: Product): void {
+    this.busy.set(true);
+    this.msg.set(null);
+    const q = this.qty();
+    this.cart.addProduct(p, q).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.msg.set('Agregado al carrito');
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.msg.set(e.error?.message ?? 'No se pudo agregar');
+      },
+    });
+  }
+
+  buyNow(p: Product): void {
+    this.busy.set(true);
+    this.msg.set(null);
+    const q = this.qty();
+    this.cart.addProduct(p, q).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.router.navigate(['/checkout']);
+      },
+      error: (e) => {
+        this.busy.set(false);
+        this.msg.set(e.error?.message ?? 'No se pudo continuar');
+      },
+    });
+  }
+}

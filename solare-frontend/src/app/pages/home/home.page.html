@@ -1,0 +1,114 @@
+<section class="relative overflow-hidden">
+  <div class="relative h-[min(70vh,520px)] w-full">
+    <img [src]="bannerSrc" alt="Lentes deportivos Ferrati" class="h-full w-full object-cover brightness-90" />
+    <div
+      class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-6 md:p-12"
+    >
+      <h1 class="max-w-xl text-3xl font-bold text-white md:text-5xl">Rendimiento y estilo Ferrati</h1>
+      <p class="mt-2 max-w-lg text-lg text-white/90">
+        Lentes deportivos usados por atletas que exigen protección UV y diseño aerodinámico.
+      </p>
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ brand: 'FERRATI', type: 'DEPORTIVO' }"
+        class="mt-6 inline-flex w-fit rounded-full bg-[#FFF52D] px-6 py-3 font-semibold text-black shadow-lg"
+        >Ver deportivos</a
+      >
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-14">
+  <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Destacados Ferrati</h2>
+  @if (data$ | async; as d) {
+    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      @for (p of d.ferrati; track p.id) {
+        <a
+          [routerLink]="['/producto', p.id]"
+          class="group overflow-hidden rounded-2xl border border-slate-200 bg-[var(--solare-surface)] shadow-sm transition hover:shadow-md dark:border-slate-700"
+        >
+          <div class="aspect-square overflow-hidden bg-slate-100">
+            @if (p.imageUrls[0]) {
+              <img
+                [src]="p.imageUrls[0]"
+                [alt]="p.name"
+                class="h-full w-full object-cover transition group-hover:scale-105"
+              />
+            }
+          </div>
+          <div class="p-4">
+            <p class="text-xs font-medium uppercase text-amber-700 dark:text-amber-400">
+              {{ p.brandDisplayName }}
+            </p>
+            <h3 class="mt-1 font-semibold text-slate-900 dark:text-white">{{ p.name }}</h3>
+            <p class="mt-2 font-bold">{{ p.priceCop | copCurrency }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  } @else {
+    <p class="mt-4 text-slate-500">Cargando…</p>
+  }
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-6">
+  <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Destacados Ray-Ban</h2>
+  <p class="mt-1 text-sm text-amber-800 dark:text-amber-300">Promoción 2x1 en modelos seleccionados.</p>
+  @if (data$ | async; as d) {
+    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      @for (p of d.rayban; track p.id) {
+        <a
+          [routerLink]="['/producto', p.id]"
+          class="group overflow-hidden rounded-2xl border border-slate-200 bg-[var(--solare-surface)] shadow-sm transition hover:shadow-md dark:border-slate-700"
+        >
+          <div class="aspect-square overflow-hidden bg-slate-100">
+            @if (p.imageUrls[0]) {
+              <img
+                [src]="p.imageUrls[0]"
+                [alt]="p.name"
+                class="h-full w-full object-cover transition group-hover:scale-105"
+              />
+            }
+          </div>
+          <div class="p-4">
+            <p class="text-xs font-medium uppercase text-amber-700 dark:text-amber-400">
+              {{ p.brandDisplayName }}
+            </p>
+            <h3 class="mt-1 font-semibold text-slate-900 dark:text-white">{{ p.name }}</h3>
+            <p class="mt-2 font-bold">{{ p.priceCop | copCurrency }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-14">
+  <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Categorías</h2>
+  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <a
+      routerLink="/tienda"
+      [queryParams]="{ gender: 'HOMBRE' }"
+      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
+      >Hombre</a
+    >
+    <a
+      routerLink="/tienda"
+      [queryParams]="{ gender: 'MUJER' }"
+      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
+      >Mujer</a
+    >
+    <a
+      routerLink="/tienda"
+      [queryParams]="{ category: 'lentes-casuales' }"
+      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
+      >Lentes casuales</a
+    >
+    <a
+      routerLink="/tienda"
+      [queryParams]="{ category: 'lentes-deportivos' }"
+      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
+      >Lentes deportivos</a
+    >
+  </div>
+</section>

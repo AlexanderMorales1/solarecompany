@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --solare-bg: #fafafa;
+  --solare-surface: #ffffff;
+  --solare-text: #111827;
+}
+
+.dark {
+  --solare-bg: #0f172a;
+  --solare-surface: #1e293b;
+  --solare-text: #f1f5f9;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--solare-bg);
+  color: var(--solare-text);
+  transition: background-color 0.2s, color 0.2s;
+}

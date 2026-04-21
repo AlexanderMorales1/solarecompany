@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: solare-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/solare_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota&characterEncoding=UTF-8
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+solare:
+  jwt:
+    secret: ${JWT_SECRET:SolareSuperSecretKeyForJwtTokenGenerationMustBe256BitsLong!!}
+    expiration-ms: 86400000
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+  frontend:
+    url: http://localhost:4200
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.solare: INFO
+    org.springframework.security: INFO

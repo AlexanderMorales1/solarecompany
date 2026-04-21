@@ -1,0 +1,65 @@
+<div class="mx-auto max-w-4xl px-4 py-8">
+  <h1 class="text-2xl font-bold">Carrito</h1>
+  @if (loading()) {
+    <p class="mt-6 text-slate-500">Cargando…</p>
+  } @else if (cart(); as c) {
+    @if (c.items.length === 0) {
+      <p class="mt-6 text-slate-500">Tu carrito está vacío.</p>
+      <a routerLink="/tienda" class="mt-4 inline-block font-medium text-amber-700 underline dark:text-amber-400"
+        >Ir a la tienda</a
+      >
+    } @else {
+      <ul class="mt-6 divide-y divide-slate-200 dark:divide-slate-700">
+        @for (i of c.items; track i.cartItemId) {
+          <li class="flex flex-wrap gap-4 py-4">
+            @if (i.product.imageUrls[0]) {
+              <img
+                [src]="i.product.imageUrls[0]"
+                [alt]="i.product.name"
+                class="h-24 w-24 rounded-lg object-cover"
+              />
+            }
+            <div class="min-w-0 flex-1">
+              <a [routerLink]="['/producto', i.product.id]" class="font-semibold hover:underline">{{
+                i.product.name
+              }}</a>
+              <p class="text-sm text-slate-500">{{ i.product.brandDisplayName }}</p>
+              <div class="mt-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="updateLine(i.cartItemId, i.quantity - 1)"
+                  class="rounded border px-2"
+                  [disabled]="i.quantity <= 1"
+                >
+                  −
+                </button>
+                <span>{{ i.quantity }}</span>
+                <button
+                  type="button"
+                  (click)="updateLine(i.cartItemId, i.quantity + 1)"
+                  class="rounded border px-2"
+                  [disabled]="i.quantity >= i.product.stock"
+                >
+                  +
+                </button>
+                <button type="button" (click)="removeLine(i.cartItemId)" class="ml-2 text-sm text-red-600 underline">
+                  Quitar
+                </button>
+              </div>
+            </div>
+            <div class="text-right font-bold">{{ i.product.priceCop * i.quantity | copCurrency }}</div>
+          </li>
+        }
+      </ul>
+      <div class="mt-6 flex items-center justify-between border-t pt-4">
+        <span class="text-lg font-semibold">Total</span>
+        <span class="text-xl font-bold">{{ c.subtotalCop | copCurrency }}</span>
+      </div>
+      <a
+        routerLink="/checkout"
+        class="mt-6 inline-flex rounded-xl bg-[#FFF52D] px-6 py-3 font-semibold text-black"
+        >Ir a pagar</a
+      >
+    }
+  }
+</div>

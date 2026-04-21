@@ -1,0 +1,30 @@
+<div class="mx-auto max-w-md px-4 py-10">
+  <h1 class="text-2xl font-bold">Recuperar contraseña</h1>
+  @if (done()) {
+    <p class="mt-4 text-slate-600 dark:text-slate-400">
+      Si el correo existe, recibirás instrucciones. En desarrollo, revisa los logs del backend para el token.
+    </p>
+    <a routerLink="/login" class="mt-4 inline-block font-medium text-amber-700 underline">Volver al login</a>
+  } @else {
+    <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+      <div>
+        <label class="block text-sm font-medium">Correo</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+        />
+      </div>
+      @if (error()) {
+        <p class="text-sm text-red-600">{{ error() }}</p>
+      }
+      <button
+        type="submit"
+        [disabled]="form.invalid"
+        class="w-full rounded-xl bg-[#FFF52D] py-3 font-semibold text-black disabled:opacity-50"
+      >
+        Enviar enlace
+      </button>
+    </form>
+  }
+</div>

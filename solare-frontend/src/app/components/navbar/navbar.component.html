@@ -1,0 +1,151 @@
+<header
+  class="sticky top-0 z-50 shadow-md bg-[#FFF52D] text-white dark:bg-slate-800 dark:text-slate-100"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+    <a routerLink="/" class="text-xl font-bold tracking-tight text-white drop-shadow-sm">Solare</a>
+
+    <nav class="hidden items-center gap-1 md:flex">
+      <a
+        routerLink="/"
+        routerLinkActive="underline"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >Inicio</a
+      >
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ gender: 'HOMBRE' }"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >Hombre</a
+      >
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ gender: 'MUJER' }"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >Mujer</a
+      >
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ brand: 'FERRATI' }"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >Ferrati</a
+      >
+      <a
+        routerLink="/tienda"
+        [queryParams]="{ brand: 'RAYBAN' }"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >RayBan</a
+      >
+      <a
+        routerLink="/carrito"
+        class="relative rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+      >
+        Carrito
+        @if (cartCount() > 0) {
+          <span
+            class="absolute -right-0 -top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-xs text-white"
+            >{{ cartCount() }}</span
+          >
+        }
+      </a>
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/perfil" class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+          >Perfil</a
+        >
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+            >Admin</a
+          >
+        }
+        <button
+          type="button"
+          (click)="logout()"
+          class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        >
+          Salir
+        </button>
+      } @else {
+        <a routerLink="/login" class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+          >Login</a
+        >
+      }
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        class="rounded px-3 py-2 text-sm font-medium hover:bg-black/10"
+        [attr.aria-label]="theme.darkMode() ? 'Modo claro' : 'Modo oscuro'"
+      >
+        {{ theme.darkMode() ? '☀️' : '🌙' }}
+      </button>
+    </nav>
+
+    <div class="flex items-center gap-2 md:hidden">
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        class="rounded p-2 hover:bg-black/10"
+        [attr.aria-label]="'Tema'"
+      >
+        {{ theme.darkMode() ? '☀️' : '🌙' }}
+      </button>
+      <button
+        type="button"
+        (click)="toggleMobile()"
+        class="rounded p-2 hover:bg-black/10"
+        aria-label="Menú"
+      >
+        ☰
+      </button>
+    </div>
+  </div>
+
+  @if (mobileOpen()) {
+    <div
+      class="border-t border-black/10 bg-[#FFF52D] px-4 py-3 dark:border-white/10 dark:bg-slate-800 md:hidden"
+    >
+      <div class="flex flex-col gap-1">
+        <a routerLink="/" (click)="toggleMobile()" class="py-2 font-medium">Inicio</a>
+        <a
+          routerLink="/tienda"
+          [queryParams]="{ gender: 'HOMBRE' }"
+          (click)="toggleMobile()"
+          class="py-2 font-medium"
+          >Hombre</a
+        >
+        <a
+          routerLink="/tienda"
+          [queryParams]="{ gender: 'MUJER' }"
+          (click)="toggleMobile()"
+          class="py-2 font-medium"
+          >Mujer</a
+        >
+        <a
+          routerLink="/tienda"
+          [queryParams]="{ brand: 'FERRATI' }"
+          (click)="toggleMobile()"
+          class="py-2 font-medium"
+          >Ferrati</a
+        >
+        <a
+          routerLink="/tienda"
+          [queryParams]="{ brand: 'RAYBAN' }"
+          (click)="toggleMobile()"
+          class="py-2 font-medium"
+          >RayBan</a
+        >
+        <a routerLink="/carrito" (click)="toggleMobile()" class="py-2 font-medium">Carrito</a>
+        @if (auth.isLoggedIn()) {
+          <a routerLink="/perfil" (click)="toggleMobile()" class="py-2 font-medium">Perfil</a>
+          @if (auth.isAdmin()) {
+            <a routerLink="/admin" (click)="toggleMobile()" class="py-2 font-medium">Admin</a>
+          }
+          <button type="button" (click)="logout(); toggleMobile()" class="py-2 text-left font-medium">
+            Salir
+          </button>
+        } @else {
+          <a routerLink="/login" (click)="toggleMobile()" class="py-2 font-medium">Login</a>
+        }
+      </div>
+    </div>
+  }
+</header>

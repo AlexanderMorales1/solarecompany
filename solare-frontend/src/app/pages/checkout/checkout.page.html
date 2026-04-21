@@ -1,0 +1,40 @@
+<div class="mx-auto max-w-lg px-4 py-8">
+  <h1 class="text-2xl font-bold">Checkout</h1>
+  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+    Pago simulado (integrable con Sistecrédito, Addi, Bold).
+  </p>
+
+  @if (cart(); as c) {
+    <div class="mt-6 rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
+      <p class="font-semibold">Total</p>
+      <p class="text-2xl font-bold">{{ c.subtotalCop | copCurrency }}</p>
+    </div>
+
+    <form class="mt-6 space-y-4" (ngSubmit)="submit()">
+      <label class="block text-sm font-medium">Método de pago</label>
+      <select
+        name="method"
+        [(ngModel)]="method"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+      >
+        <option value="SISTECREDITO">Sistecrédito</option>
+        <option value="ADDI">Addi</option>
+        <option value="BOLD">Bold</option>
+      </select>
+
+      @if (error()) {
+        <p class="text-sm text-red-600">{{ error() }}</p>
+      }
+
+      <button
+        type="submit"
+        [disabled]="busy() || c.items.length === 0"
+        class="w-full rounded-xl bg-[#FFF52D] py-3 font-semibold text-black disabled:opacity-50"
+      >
+        {{ busy() ? 'Procesando…' : 'Confirmar compra' }}
+      </button>
+    </form>
+  } @else {
+    <p class="mt-6 text-slate-500">Cargando carrito…</p>
+  }
+</div>

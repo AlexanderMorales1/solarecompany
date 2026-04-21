@@ -1,0 +1,48 @@
+<div class="mx-auto max-w-md px-4 py-10">
+  <h1 class="text-2xl font-bold">Iniciar sesión</h1>
+  <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+    <div>
+      <label class="block text-sm font-medium">Correo</label>
+      <input
+        type="email"
+        formControlName="email"
+        class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+      />
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Contraseña</label>
+      <input
+        type="password"
+        formControlName="password"
+        class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+      />
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <input type="checkbox" formControlName="remember" />
+      Recordar usuario
+    </label>
+    @if (error()) {
+      <p class="text-sm text-red-600">{{ error() }}</p>
+    }
+    <button
+      type="submit"
+      [disabled]="busy() || form.invalid"
+      class="w-full rounded-xl bg-[#FFF52D] py-3 font-semibold text-black disabled:opacity-50"
+    >
+      {{ busy() ? 'Entrando…' : 'Entrar' }}
+    </button>
+  </form>
+
+  <button
+    type="button"
+    (click)="google()"
+    class="mt-4 w-full rounded-xl border border-slate-300 py-3 font-semibold dark:border-slate-600"
+  >
+    Continuar con Google
+  </button>
+
+  <div class="mt-4 flex flex-wrap gap-3 text-sm">
+    <a routerLink="/registro" class="text-amber-700 underline dark:text-amber-400">Crear cuenta</a>
+    <a routerLink="/recuperar" class="text-amber-700 underline dark:text-amber-400">¿Olvidaste tu contraseña?</a>
+  </div>
+</div>
