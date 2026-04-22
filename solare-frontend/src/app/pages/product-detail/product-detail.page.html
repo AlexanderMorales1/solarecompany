@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-7xl px-4 py-8">
   @if (product$ | async; as p) {
-    <div class="grid gap-10 lg:grid-cols-2">
+    <div [@detailEnter]="p.id" class="grid gap-10 lg:grid-cols-2">
       <div class="space-y-3">
         @for (img of p.imageUrls; track img) {
           <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 dark:border-slate-700">

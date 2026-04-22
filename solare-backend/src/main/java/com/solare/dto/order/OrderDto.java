@@ -18,6 +18,14 @@ public class OrderDto {
     private BigDecimal totalCop;
     private String status;
     private String paymentMethod;
+    private String customerFullName;
+    private String customerEmail;
+    private String customerPhone;
+    private String country;
+    private String department;
+    private String city;
+    private String neighborhood;
+    private String address;
     private Instant createdAt;
     private List<OrderLineDto> lines;
 }

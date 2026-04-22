@@ -21,6 +21,13 @@
           <span>{{ o.totalCop | copCurrency }}</span>
         </div>
         <p class="text-xs text-slate-500">{{ o.createdAt | date: 'medium' }} · {{ o.paymentMethod }}</p>
+        @if (o.customerFullName) {
+          <p class="mt-2 text-xs text-slate-600 dark:text-slate-400">
+            <span class="font-medium">Envío:</span> {{ o.customerFullName }} · {{ o.city }}, {{ o.department }} ·
+            {{ o.neighborhood }} — {{ o.address }}
+          </p>
+          <p class="text-xs text-slate-500">{{ o.customerEmail }} · {{ o.customerPhone }}</p>
+        }
         <ul class="mt-2 text-sm">
           @for (l of o.lines; track l.productId) {
             <li>{{ l.productName }} × {{ l.quantity }}</li>

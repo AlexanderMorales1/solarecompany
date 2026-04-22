@@ -44,6 +44,15 @@ public class CartController {
         return ResponseEntity.ok(cartService.add(user, req));
     }
 
+    /** Alias compatible con clientes que esperan POST /cart/add. */
+    @PostMapping("/add")
+    @Operation(summary = "Agregar al carrito (alias de POST /cart/items)")
+    public ResponseEntity<CartSummaryDto> addAlias(
+            @AuthenticationPrincipal SolareUserDetails user,
+            @Valid @RequestBody AddToCartRequest req) {
+        return ResponseEntity.ok(cartService.add(user, req));
+    }
+
     @PutMapping("/items/{cartItemId}")
     @Operation(summary = "Actualizar cantidad")
     public ResponseEntity<CartSummaryDto> update(

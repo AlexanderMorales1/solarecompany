@@ -82,33 +82,3 @@
     </div>
   }
 </section>
-
-<section class="mx-auto max-w-7xl px-4 py-14">
-  <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Categorías</h2>
-  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    <a
-      routerLink="/tienda"
-      [queryParams]="{ gender: 'HOMBRE' }"
-      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
-      >Hombre</a
-    >
-    <a
-      routerLink="/tienda"
-      [queryParams]="{ gender: 'MUJER' }"
-      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
-      >Mujer</a
-    >
-    <a
-      routerLink="/tienda"
-      [queryParams]="{ category: 'lentes-casuales' }"
-      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
-      >Lentes casuales</a
-    >
-    <a
-      routerLink="/tienda"
-      [queryParams]="{ category: 'lentes-deportivos' }"
-      class="rounded-2xl border border-slate-200 bg-[var(--solare-surface)] p-6 text-center font-semibold shadow-sm hover:border-amber-400 dark:border-slate-700"
-      >Lentes deportivos</a
-    >
-  </div>
-</section>

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, merge, startWith } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 import { ThemeService } from '../../services/theme.service';
@@ -21,10 +21,12 @@ export class NavbarComponent {
   protected cartCount = signal(0);
 
   constructor() {
-    this.refreshCartCount();
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
-      this.refreshCartCount();
-    });
+    merge(
+      this.router.events.pipe(filter((e) => e instanceof NavigationEnd)),
+      this.cartService.cartChanged,
+    )
+      .pipe(startWith(null))
+      .subscribe(() => this.refreshCartCount());
   }
 
   toggleMobile(): void {

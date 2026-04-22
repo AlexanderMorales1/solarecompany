@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +13,17 @@ import { ProductService } from '../../services/product.service';
   standalone: true,
   imports: [AsyncPipe, CopCurrencyPipe],
   templateUrl: './product-detail.page.html',
+  animations: [
+    trigger('detailEnter', [
+      transition('* => *', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate(
+          '450ms cubic-bezier(0.22, 1, 0.36, 1)',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute);

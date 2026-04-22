@@ -1,4 +1,4 @@
-# Perfil local sin MySQL: base H2 en memoria (ideal para desarrollo rápido).
+# Perfil local sin MySQL: base H2 en memoria .
 spring:
   datasource:
     url: jdbc:h2:mem:solare;DB_CLOSE_DELAY=-1;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH

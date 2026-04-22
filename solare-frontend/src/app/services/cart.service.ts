@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, concatMap, from, last, map, of, tap } from 'rxjs';
+import { Observable, Subject, concatMap, from, last, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CartSummary } from '../models/cart.model';
 import { Product } from '../models/product.model';
@@ -19,6 +19,15 @@ export class CartService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
 
+  private readonly cartChangedSubject = new Subject<void>();
+
+  /** Emite cuando el contenido del carrito cambia (local o servidor). */
+  readonly cartChanged = this.cartChangedSubject.asObservable();
+
+  private notifyCartChanged(): void {
+    this.cartChangedSubject.next();
+  }
+
   getCart(): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
       return this.http.get<CartSummary>(`${environment.apiUrl}/cart`);
@@ -28,20 +37,25 @@ export class CartService {
 
   addProduct(product: Product, quantity: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
-      return this.http.post<CartSummary>(`${environment.apiUrl}/cart/items`, {
-        productId: product.id,
-        quantity,
-      });
+      return this.http
+        .post<CartSummary>(`${environment.apiUrl}/cart/items`, {
+          productId: product.id,
+          quantity,
+        })
+        .pipe(tap(() => this.notifyCartChanged()));
     }
     this.upsertLocal(product, quantity);
+    this.notifyCartChanged();
     return of(this.readLocalSummary());
   }
 
   updateQuantity(cartItemId: number, quantity: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
-      return this.http.put<CartSummary>(`${environment.apiUrl}/cart/items/${cartItemId}`, {
-        quantity,
-      });
+      return this.http
+        .put<CartSummary>(`${environment.apiUrl}/cart/items/${cartItemId}`, {
+          quantity,
+        })
+        .pipe(tap(() => this.notifyCartChanged()));
     }
     const entries = this.readLocal();
     const idx = entries.findIndex((_, i) => i === cartItemId);
@@ -49,15 +63,19 @@ export class CartService {
       entries[idx].quantity = quantity;
       this.writeLocal(entries);
     }
+    this.notifyCartChanged();
     return of(this.readLocalSummary());
   }
 
   removeLine(cartItemId: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
-      return this.http.delete<CartSummary>(`${environment.apiUrl}/cart/items/${cartItemId}`);
+      return this.http
+        .delete<CartSummary>(`${environment.apiUrl}/cart/items/${cartItemId}`)
+        .pipe(tap(() => this.notifyCartChanged()));
     }
     const entries = this.readLocal().filter((_, i) => i !== cartItemId);
     this.writeLocal(entries);
+    this.notifyCartChanged();
     return of(this.readLocalSummary());
   }
 
@@ -76,6 +94,7 @@ export class CartService {
       ),
       last(),
       tap(() => this.clearLocal()),
+      tap(() => this.notifyCartChanged()),
       map(() => undefined),
     );
   }

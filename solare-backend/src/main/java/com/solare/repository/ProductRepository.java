@@ -4,6 +4,8 @@ import com.solare.model.entity.BrandEntity;
 import com.solare.model.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -12,4 +14,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
     List<ProductEntity> findByBrandAndFeaturedTrue(BrandEntity brand);
 
     List<ProductEntity> findByFeaturedTrue();
+
+    @Query("SELECT COUNT(DISTINCT p.id) FROM ProductEntity p JOIN p.categories c WHERE c.slug = :slug")
+    long countByCategorySlug(@Param("slug") String slug);
 }

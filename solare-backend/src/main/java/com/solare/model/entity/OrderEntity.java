@@ -52,6 +52,31 @@ public class OrderEntity {
     @Column(name = "payment_method", length = 32)
     private PaymentMethod paymentMethod;
 
+    /** Datos de envío / contacto capturados en checkout (snapshot al momento de la compra). */
+    @Column(name = "customer_full_name", length = 200)
+    private String customerFullName;
+
+    @Column(name = "customer_email", length = 255)
+    private String customerEmail;
+
+    @Column(name = "customer_phone", length = 32)
+    private String customerPhone;
+
+    @Column(name = "ship_country", length = 100)
+    private String country;
+
+    @Column(name = "ship_department", length = 100)
+    private String department;
+
+    @Column(name = "ship_city", length = 100)
+    private String city;
+
+    @Column(name = "ship_neighborhood", length = 120)
+    private String neighborhood;
+
+    @Column(name = "ship_address", length = 500)
+    private String address;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
