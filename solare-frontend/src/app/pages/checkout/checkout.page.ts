@@ -25,6 +25,9 @@ export class CheckoutPage implements OnInit {
   protected readonly cart = signal<CartSummary | null>(null);
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly wompiModalOpen = signal(false);
+  protected readonly wompiStatus = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+  protected readonly wompiMessage = signal<string | null>(null);
 
   private readonly phonePattern = /^[+]?[0-9\s\-]{10,20}$/;
 
@@ -67,6 +70,19 @@ export class CheckoutPage implements OnInit {
     }
     this.busy.set(true);
     this.error.set(null);
+    this.wompiMessage.set(null);
+    const paymentMethod = this.form.getRawValue().paymentMethod;
+    if (paymentMethod === 'WOMPI') {
+      this.busy.set(false);
+      this.openWompiSandbox();
+      return;
+    }
+    this.performCheckout();
+  }
+
+  private performCheckout(): void {
+    this.busy.set(true);
+    this.error.set(null);
     const v = this.form.getRawValue();
     this.orders
       .checkout({
@@ -83,6 +99,7 @@ export class CheckoutPage implements OnInit {
       .subscribe({
         next: () => {
           this.busy.set(false);
+          this.wompiModalOpen.set(false);
           this.router.navigate(['/perfil'], { queryParams: { ok: '1' } });
         },
         error: (e: HttpErrorResponse) => {
@@ -100,6 +117,34 @@ export class CheckoutPage implements OnInit {
           this.error.set(body?.message ?? 'No se pudo completar el pago simulado');
         },
       });
+  }
+
+  openWompiSandbox(): void {
+    this.wompiModalOpen.set(true);
+    this.wompiStatus.set('idle');
+  }
+
+  closeWompiSandbox(): void {
+    if (this.wompiStatus() === 'loading') return;
+    this.wompiModalOpen.set(false);
+    this.wompiStatus.set('idle');
+    this.wompiMessage.set(null);
+  }
+
+  confirmWompiSandboxPayment(): void {
+    this.wompiStatus.set('loading');
+    this.wompiMessage.set('Procesando pago en sandbox...');
+    setTimeout(() => {
+      const success = Math.random() >= 0.2;
+      if (success) {
+        this.wompiStatus.set('success');
+        this.wompiMessage.set('Pago simulado aprobado por Wompi Sandbox');
+        this.performCheckout();
+        return;
+      }
+      this.wompiStatus.set('error');
+      this.wompiMessage.set('Pago simulado rechazado. Intenta de nuevo.');
+    }, 1800);
   }
 
   fieldInvalid(name: string): boolean {

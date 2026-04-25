@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -29,4 +30,5 @@ public class ProductDto {
     private String discountType;
     private List<String> imageUrls;
     private Set<String> categorySlugs;
+    private Instant createdAt;
 }

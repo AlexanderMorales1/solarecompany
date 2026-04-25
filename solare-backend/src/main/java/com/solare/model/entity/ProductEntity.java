@@ -23,10 +23,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import jakarta.persistence.PrePersist;
 
 @Entity
 @Table(name = "products")
@@ -86,6 +88,16 @@ public class ProductEntity {
     )
     @Builder.Default
     private Set<CategoryEntity> categories = new HashSet<>();
+
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 
     public enum ProductType {
         CASUAL,

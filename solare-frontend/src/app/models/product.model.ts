@@ -14,6 +14,7 @@ export interface Product {
   discountType?: string | null;
   imageUrls: string[];
   categorySlugs: string[];
+  createdAt?: string;
 }
 
 export interface PageResponse<T> {

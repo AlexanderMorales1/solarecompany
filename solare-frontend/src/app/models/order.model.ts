@@ -1,4 +1,4 @@
-export type PaymentMethod = 'SISTECREDITO' | 'ADDI' | 'BOLD';
+export type PaymentMethod = 'SISTECREDITO' | 'ADDI' | 'BOLD' | 'WOMPI';
 
 export interface CheckoutPayload {
   paymentMethod: PaymentMethod;

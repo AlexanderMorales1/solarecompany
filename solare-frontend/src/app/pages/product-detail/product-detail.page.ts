@@ -1,8 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, NgZone, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, map, switchMap, take, tap } from 'rxjs';
 import { Product } from '../../models/product.model';
 import { CopCurrencyPipe } from '../../pipes/cop-currency.pipe';
 import { CartService } from '../../services/cart.service';
@@ -30,6 +30,7 @@ export class ProductDetailPage {
   private readonly router = inject(Router);
   private readonly products = inject(ProductService);
   private readonly cart = inject(CartService);
+  private readonly ngZone = inject(NgZone);
 
   protected readonly qty = signal(1);
   protected readonly busy = signal(false);
@@ -38,6 +39,12 @@ export class ProductDetailPage {
   protected readonly product$: Observable<Product> = this.route.paramMap.pipe(
     map((p) => Number(p.get('id'))),
     switchMap((id) => this.products.get(id)),
+    tap(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+        document.getElementById('product-main')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      });
+    }),
   );
 
   inc(): void {

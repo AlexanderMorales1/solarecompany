@@ -64,7 +64,7 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/oauth2/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/discounts/public/**")
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/discounts/public/**", "/home-banners/**", "/uploads/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -14,6 +14,7 @@ public class SolareProperties {
     private Jwt jwt = new Jwt();
     private Cors cors = new Cors();
     private Frontend frontend = new Frontend();
+    private Storage storage = new Storage();
 
     @Data
     public static class Jwt {
@@ -29,5 +30,11 @@ public class SolareProperties {
     @Data
     public static class Frontend {
         private String url = "http://localhost:4200";
+    }
+
+    @Data
+    public static class Storage {
+        private String uploadDir = "uploads";
+        private String publicBasePath = "/uploads";
     }
 }

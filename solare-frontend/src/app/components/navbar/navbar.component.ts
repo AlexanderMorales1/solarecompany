@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, merge, startWith } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +9,7 @@ import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, ReactiveFormsModule],
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
@@ -19,6 +20,7 @@ export class NavbarComponent {
 
   protected readonly mobileOpen = signal(false);
   protected cartCount = signal(0);
+  protected readonly searchCtrl = new FormControl('', { nonNullable: true });
 
   constructor() {
     merge(
@@ -50,5 +52,18 @@ export class NavbarComponent {
       },
       error: () => this.cartCount.set(0),
     });
+  }
+
+  search(): void {
+    const query = this.searchCtrl.value.trim();
+    const onStore = this.router.url.startsWith('/tienda');
+    void this.router.navigate(['/tienda'], {
+      queryParams: {
+        q: query || null,
+        page: 0,
+      },
+      queryParamsHandling: onStore ? 'merge' : undefined,
+    });
+    this.mobileOpen.set(false);
   }
 }

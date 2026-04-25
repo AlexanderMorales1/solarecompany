@@ -1,6 +1,6 @@
 package com.solare.controller;
 
-import com.solare.model.entity.CategoryEntity;
+import com.solare.dto.category.CategoryDto;
 import com.solare.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Listar categorías")
-    public ResponseEntity<List<CategoryEntity>> list() {
+    public ResponseEntity<List<CategoryDto>> list() {
         return ResponseEntity.ok(categoryService.listAll());
     }
 }

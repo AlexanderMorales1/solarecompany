@@ -31,6 +31,7 @@ public class ProductMapper {
                 .categorySlugs(p.getCategories() != null
                         ? p.getCategories().stream().map(c -> c.getSlug()).collect(Collectors.toSet())
                         : java.util.Set.of())
+                .createdAt(p.getCreatedAt())
                 .build();
     }
 }

@@ -1,6 +1,47 @@
 <div class="mx-auto max-w-7xl px-4 py-8">
   <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Tienda</h1>
-  <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Filtra por navbar o parámetros en la URL.</p>
+  <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Usa el buscador y combina filtros para encontrar productos.</p>
+
+  <form class="mt-5 grid gap-3 rounded-2xl border border-slate-200 p-4 dark:border-slate-700 md:grid-cols-5" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+    <input
+      formControlName="q"
+      placeholder="Buscar por nombre o descripción"
+      class="md:col-span-2 rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+    />
+    <select formControlName="brand" class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800">
+      <option value="">Marca</option>
+      <option value="FERRATI">Ferrati</option>
+      <option value="RAYBAN">Ray-Ban</option>
+    </select>
+    <select formControlName="gender" class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800">
+      <option value="">Género</option>
+      <option value="HOMBRE">Hombre</option>
+      <option value="MUJER">Mujer</option>
+    </select>
+    <select formControlName="type" class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800">
+      <option value="">Tipo</option>
+      <option value="CASUAL">Casual</option>
+      <option value="DEPORTIVO">Deportivo</option>
+    </select>
+    <input
+      formControlName="category"
+      placeholder="Categoría (slug)"
+      class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
+    />
+    <select formControlName="sort" class="rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800">
+      <option value="">Orden</option>
+      <option value="createdAt,desc">Más recientes</option>
+      <option value="priceCop,asc">Precio menor a mayor</option>
+      <option value="priceCop,desc">Precio mayor a menor</option>
+      <option value="name,asc">Nombre A-Z</option>
+    </select>
+    <div class="md:col-span-2 flex gap-2">
+      <button type="submit" class="rounded-xl bg-[#FFF52D] px-4 py-2 font-semibold text-black">Aplicar</button>
+      <button type="button" (click)="clearFilters()" class="rounded-xl border border-slate-300 px-4 py-2 dark:border-slate-600">
+        Limpiar
+      </button>
+    </div>
+  </form>
 
   @if (page$ | async; as page) {
     <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -25,6 +66,29 @@
     </div>
     @if (page.totalElements === 0) {
       <p class="mt-8 text-slate-500">No hay productos con estos filtros.</p>
+    }
+    @if (page.totalPages > 1) {
+      @if (currentPage$ | async; as currentPage) {
+        <div class="mt-8 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage <= 0"
+            class="rounded border border-slate-300 px-3 py-1 disabled:opacity-50 dark:border-slate-600"
+          >
+            Anterior
+          </button>
+          <span class="text-sm text-slate-600 dark:text-slate-300">Página {{ currentPage + 1 }} de {{ page.totalPages }}</span>
+          <button
+            type="button"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage >= page.totalPages - 1"
+            class="rounded border border-slate-300 px-3 py-1 disabled:opacity-50 dark:border-slate-600"
+          >
+            Siguiente
+          </button>
+        </div>
+      }
     }
   } @else {
     <p class="mt-8 text-slate-500">Cargando…</p>

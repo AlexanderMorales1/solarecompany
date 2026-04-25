@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +35,10 @@ public class ProductController {
             @RequestParam(required = false) ProductEntity.GenderTarget gender,
             @RequestParam(required = false) ProductEntity.ProductType type,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false, name = "q") String query,
             @RequestParam(required = false) Boolean featured,
-            @PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(productService.search(brand, gender, type, category, featured, pageable));
+            @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(productService.search(brand, gender, type, category, query, featured, pageable));
     }
 
     @GetMapping("/{id}")
@@ -49,5 +51,12 @@ public class ProductController {
     @Operation(summary = "Destacados por marca")
     public ResponseEntity<List<ProductDto>> featuredByBrand(@PathVariable BrandEntity.BrandCode brand) {
         return ResponseEntity.ok(productService.featuredByBrand(brand));
+    }
+
+    @GetMapping("/recent")
+    @Operation(summary = "Productos más recientes")
+    public ResponseEntity<Page<ProductDto>> recent(
+            @PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(productService.search(null, null, null, null, null, null, pageable));
     }
 }

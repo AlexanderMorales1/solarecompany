@@ -153,6 +153,7 @@
           formControlName="paymentMethod"
           class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800"
         >
+          <option value="WOMPI">Wompi (Sandbox embebido)</option>
           <option value="SISTECREDITO">Sistecrédito</option>
           <option value="ADDI">Addi</option>
           <option value="BOLD">Bold</option>
@@ -173,5 +174,39 @@
     </form>
   } @else {
     <p class="mt-6 text-slate-500">Cargando carrito…</p>
+  }
+
+  @if (wompiModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div class="w-full max-w-md rounded-2xl bg-white p-5 dark:bg-slate-900">
+        <h2 class="text-lg font-bold">Wompi Sandbox</h2>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          Simulación embebida de pago. No se procesa dinero real.
+        </p>
+        @if (wompiMessage()) {
+          <p class="mt-3 text-sm" [class.text-emerald-600]="wompiStatus() === 'success'" [class.text-red-600]="wompiStatus() === 'error'">
+            {{ wompiMessage() }}
+          </p>
+        }
+        <div class="mt-5 flex gap-2">
+          <button
+            type="button"
+            (click)="confirmWompiSandboxPayment()"
+            [disabled]="wompiStatus() === 'loading' || busy()"
+            class="rounded-xl bg-[#FFF52D] px-4 py-2 font-semibold text-black disabled:opacity-50"
+          >
+            {{ wompiStatus() === 'loading' ? 'Procesando...' : 'Pagar en sandbox' }}
+          </button>
+          <button
+            type="button"
+            (click)="closeWompiSandbox()"
+            [disabled]="wompiStatus() === 'loading' || busy()"
+            class="rounded-xl border border-slate-300 px-4 py-2 dark:border-slate-600"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>

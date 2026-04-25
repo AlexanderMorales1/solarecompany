@@ -94,6 +94,7 @@ public class OrderEntity {
     public enum PaymentMethod {
         SISTECREDITO,
         ADDI,
-        BOLD
+        BOLD,
+        WOMPI
     }
 }

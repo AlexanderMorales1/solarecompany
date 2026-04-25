@@ -1,5 +1,49 @@
 # SolareCompany
 
+## Manual de uso administrador
+
+### Cómo subir productos
+1. Inicia sesión con una cuenta `ADMIN`.
+2. Entra a `/admin` y abre **Crear producto**.
+3. Completa los campos obligatorios:
+   - Nombre producto
+   - Precio (COP)
+   - Imagen principal
+   - Categoría
+   - Stock
+   - Descripción
+   - Estado activo/inactivo
+4. Pulsa **Crear producto** y espera el mensaje de éxito.
+
+### Cómo subir imágenes
+- Formatos permitidos: `JPG`, `JPEG`, `PNG`, `WEBP`.
+- Puedes arrastrar y soltar la imagen principal en la zona de carga.
+- También puedes usar el selector de archivo.
+- Se muestra vista previa antes de guardar.
+
+### Cómo editar productos
+1. En la tabla de inventario, pulsa **Editar**.
+2. Modifica los campos necesarios.
+3. Si no cambias imagen, se conserva la imagen actual.
+4. Pulsa **Actualizar producto**.
+
+### Cómo usar banners publicitarios
+1. En la sección **Imagen publicitaria principal (carrusel)**:
+   - Crea banners con título/subtítulo (opcional), estado y orden.
+   - Sube imagen de banner (JPG/JPEG/PNG/WEBP).
+2. Puedes editar o eliminar banners existentes.
+3. Los banners activos se muestran en Home como carrusel automático.
+
+### Formatos permitidos
+- Productos y banners: `jpg`, `jpeg`, `png`, `webp`
+- Tamaño: configurable por propiedades de `multipart` del backend.
+
+### Solución de errores comunes
+- **No me deja crear producto**: verifica categoría seleccionada, precio/stock válidos y una imagen principal.
+- **No aparece la imagen**: revisa formato permitido y que el archivo no esté corrupto.
+- **No veo cambios en Home**: confirma que el banner esté `Activo` y con orden correcto.
+- **Permiso denegado**: revisa que el usuario tenga rol `ADMIN`.
+
 
 
 ## Getting started

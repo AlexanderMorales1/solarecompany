@@ -40,12 +40,14 @@ public class ProductService {
             ProductEntity.GenderTarget gender,
             ProductEntity.ProductType type,
             String categorySlug,
+            String query,
             Boolean featured,
             Pageable pageable) {
         Specification<ProductEntity> spec = Specification.where(ProductSpecification.brandCode(brand))
                 .and(ProductSpecification.gender(gender))
                 .and(ProductSpecification.productType(type))
                 .and(ProductSpecification.categorySlug(categorySlug))
+                .and(ProductSpecification.searchText(query))
                 .and(ProductSpecification.featured(featured));
         return productRepository.findAll(spec, pageable).map(productMapper::toDto);
     }

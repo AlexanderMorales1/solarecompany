@@ -1,10 +1,22 @@
 <header
   class="sticky top-0 z-50 shadow-md bg-[#FFF52D] text-white dark:bg-slate-800 dark:text-slate-100"
 >
-  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+  <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-3 px-4 py-3 md:grid-cols-[auto_1fr_auto]">
     <a routerLink="/" class="text-xl font-bold tracking-tight text-white drop-shadow-sm">Solare</a>
 
-    <nav class="hidden items-center gap-1 md:flex">
+    <form class="hidden w-full max-w-xl md:flex md:justify-center" (ngSubmit)="search()">
+      <div class="flex w-full items-center rounded-full bg-white/95 px-3 py-1 text-black shadow-sm">
+        <input
+          [formControl]="searchCtrl"
+          type="search"
+          placeholder="Buscar productos..."
+          class="w-full bg-transparent px-2 py-1 text-sm outline-none"
+        />
+        <button type="submit" class="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">Buscar</button>
+      </div>
+    </form>
+
+    <nav class="hidden items-center justify-end gap-1 md:flex">
       <a
         routerLink="/"
         routerLinkActive="underline"
@@ -82,6 +94,14 @@
     <div class="flex items-center gap-2 md:hidden">
       <button
         type="button"
+        (click)="search()"
+        class="rounded p-2 hover:bg-black/10"
+        [attr.aria-label]="'Buscar'"
+      >
+        🔍
+      </button>
+      <button
+        type="button"
         (click)="toggleTheme()"
         class="rounded p-2 hover:bg-black/10"
         [attr.aria-label]="'Tema'"
@@ -104,6 +124,15 @@
       class="border-t border-black/10 bg-[#FFF52D] px-4 py-3 dark:border-white/10 dark:bg-slate-800 md:hidden"
     >
       <div class="flex flex-col gap-1">
+        <form class="mb-2 flex items-center gap-2" (ngSubmit)="search()">
+          <input
+            [formControl]="searchCtrl"
+            type="search"
+            placeholder="Buscar productos..."
+            class="w-full rounded border border-black/20 bg-white px-3 py-2 text-sm text-black"
+          />
+          <button type="submit" class="rounded bg-black px-3 py-2 text-xs font-semibold text-white">Ir</button>
+        </form>
         <a routerLink="/" (click)="toggleMobile()" class="py-2 font-medium">Inicio</a>
         <a
           routerLink="/tienda"

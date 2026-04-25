@@ -1,5 +1,6 @@
 package com.solare.service;
 
+import com.solare.dto.category.CategoryDto;
 import com.solare.model.entity.CategoryEntity;
 import com.solare.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,17 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public List<CategoryEntity> listAll() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> listAll() {
+        return categoryRepository.findAll().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    private CategoryDto toDto(CategoryEntity entity) {
+        return CategoryDto.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .slug(entity.getSlug())
+                .build();
     }
 }

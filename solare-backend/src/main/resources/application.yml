@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+  servlet:
+    multipart:
+      # Sin límite por defecto; se puede ajustar por variable de entorno.
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:-1}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:-1}
   security:
     oauth2:
       client:
@@ -46,6 +51,9 @@ solare:
       - http://localhost:4200
   frontend:
     url: http://localhost:4200
+  storage:
+    upload-dir: ${SOLARE_UPLOAD_DIR:uploads}
+    public-base-path: /uploads
 
 springdoc:
   api-docs:
