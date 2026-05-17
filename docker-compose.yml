@@ -8,9 +8,9 @@ services:
       MYSQL_ROOT_PASSWORD: "12345"
       MYSQL_DATABASE: solare_db
       MYSQL_USER: solare
-      MYSQL_PASSWORD: solare
+      MYSQL_PASSWORD: Solare1234!
     ports:
-      - "3306:3306"
+      - "3307:3306"
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - solare_mysql_data:/var/lib/mysql
