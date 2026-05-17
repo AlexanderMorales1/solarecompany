@@ -83,11 +83,23 @@ export class CatalogPage {
     });
   }
 
-  goToPage(page: number): void {
-    if (page < 0) return;
-    void this.router.navigate(['/tienda'], {
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-    });
-  }
+    goToPage(page: number): void {
+      if (page < 0) return;
+      void this.router.navigate(['/tienda'], {
+        queryParams: { page },
+        queryParamsHandling: 'merge',
+      });
+    }
+
+    getImageUrl(image: string): string {
+      if (!image) {
+        return 'https://via.placeholder.com/300x300?text=No+Image';
+      }
+
+      if (image.startsWith('http')) {
+        return image;
+      }
+
+      return `http://localhost:8080/api${image}`;
+    }
 }

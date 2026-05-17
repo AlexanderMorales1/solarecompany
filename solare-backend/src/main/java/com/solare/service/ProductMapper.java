@@ -27,7 +27,18 @@ public class ProductMapper {
                 .discountId(p.getDiscount() != null ? p.getDiscount().getId() : null)
                 .discountCode(p.getDiscount() != null ? p.getDiscount().getCode() : null)
                 .discountType(p.getDiscount() != null ? p.getDiscount().getType().name() : null)
-                .imageUrls(p.getImageUrls() != null ? p.getImageUrls() : java.util.List.of())
+                .imageUrls(
+                        p.getImageUrls() != null
+                                ? p.getImageUrls().stream()
+                                .map(img -> {
+                                    if (img.startsWith("http")) {
+                                        return img;
+                                    }
+                                    return "http://localhost:8080/api" + img;
+                                })
+                                .toList()
+                                : java.util.List.of()
+                )
                 .categorySlugs(p.getCategories() != null
                         ? p.getCategories().stream().map(c -> c.getSlug()).collect(Collectors.toSet())
                         : java.util.Set.of())

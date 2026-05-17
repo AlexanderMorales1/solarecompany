@@ -52,7 +52,7 @@
         >
           <div class="aspect-[4/3] overflow-hidden bg-slate-100">
             @if (p.imageUrls[0]) {
-              <img [src]="p.imageUrls[0]" [alt]="p.name" class="h-full w-full object-cover" />
+            <img [src]="getImageUrl(p.imageUrls[0])" [alt]="p.name" class="h-full w-full object-cover" />
             }
           </div>
           <div class="p-4">
