@@ -26,7 +26,7 @@ export class HomePage implements OnInit, OnDestroy {
   protected readonly recent$: Observable<Product[]> = this.products.recent(8).pipe(map((r) => r.content));
 
   protected readonly fallbackBanner =
-    'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1600&q=80';
+    '/image/Photoroom-20250724_092901_4.png';
   protected readonly banners = signal<HomeBanner[]>([]);
   protected readonly activeBannerIndex = signal(0);
   protected readonly bannersLoading = signal(true);
