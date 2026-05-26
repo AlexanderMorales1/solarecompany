@@ -1,3 +1,12 @@
+/**
+ * @file Página de checkout (pago y envío).
+ * @description Formulario de datos de entrega, selección de medio de pago simulado,
+ *   sandbox Wompi y envío del pedido al API. Requiere autenticación (`authGuard`).
+ * @see {@link ../../services/order.service.ts}
+ * @see {@link ../../services/cart.service.ts}
+ * @see {@link ../../services/auth.service.ts}
+ */
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +18,7 @@ import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
 
+/** Checkout con prellenado desde perfil y modal sandbox para Wompi. */
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -57,6 +67,9 @@ export class CheckoutPage implements OnInit {
     });
   }
 
+  /**
+   * Valida formulario y carrito; Wompi abre sandbox antes de llamar al API.
+   */
   submit(): void {
     const c = this.cart();
     if (!c || c.items.length === 0) {
@@ -80,6 +93,7 @@ export class CheckoutPage implements OnInit {
     this.performCheckout();
   }
 
+  /** POST `/orders/checkout` con datos del formulario. */
   private performCheckout(): void {
     this.busy.set(true);
     this.error.set(null);
@@ -105,6 +119,7 @@ export class CheckoutPage implements OnInit {
         error: (e: HttpErrorResponse) => {
           this.busy.set(false);
           const body = e.error as { message?: string; fieldErrors?: Record<string, string> } | undefined;
+          // Mapea errores de validación del servidor a controles del formulario.
           if (body?.fieldErrors) {
             for (const [key, msg] of Object.entries(body.fieldErrors)) {
               const ctrl = this.form.get(key);
@@ -119,11 +134,13 @@ export class CheckoutPage implements OnInit {
       });
   }
 
+  /** Abre el modal de pago simulado Wompi. */
   openWompiSandbox(): void {
     this.wompiModalOpen.set(true);
     this.wompiStatus.set('idle');
   }
 
+  /** Cierra el modal salvo mientras está en estado `loading`. */
   closeWompiSandbox(): void {
     if (this.wompiStatus() === 'loading') return;
     this.wompiModalOpen.set(false);
@@ -131,6 +148,9 @@ export class CheckoutPage implements OnInit {
     this.wompiMessage.set(null);
   }
 
+  /**
+   * Simula latencia de pasarela; ~80 % éxito aleatorio antes de ejecutar checkout real.
+   */
   confirmWompiSandboxPayment(): void {
     this.wompiStatus.set('loading');
     this.wompiMessage.set('Procesando pago en sandbox...');
@@ -147,6 +167,7 @@ export class CheckoutPage implements OnInit {
     }, 1800);
   }
 
+  /** Indica si un campo debe mostrarse como inválido en la plantilla. */
   fieldInvalid(name: string): boolean {
     const c = this.form.get(name);
     return !!c && c.invalid && (c.dirty || c.touched);

@@ -1,3 +1,9 @@
+/**
+ * @file Servicio de pedidos.
+ * @description Checkout del usuario, historial propio y listado paginado para administradores.
+ * @see {@link ../models/order.model.ts}
+ */
+
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -5,18 +11,25 @@ import { environment } from '../../environments/environment';
 import { CheckoutPayload, Order } from '../models/order.model';
 import { PageResponse } from '../models/product.model';
 
+/** Cliente HTTP para endpoints `/orders` y `/admin/orders`. */
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private readonly http = inject(HttpClient);
 
+  /** Crea un pedido a partir del carrito y datos de envío/pago. */
   checkout(payload: CheckoutPayload): Observable<Order> {
     return this.http.post<Order>(`${environment.apiUrl}/orders/checkout`, payload);
   }
 
+  /** Lista los pedidos del usuario autenticado. */
   mine(): Observable<Order[]> {
     return this.http.get<Order[]>(`${environment.apiUrl}/orders/mine`);
   }
 
+  /**
+   * Lista pedidos con filtros (panel admin).
+   * @param params Filtro por cliente, estado, rango de fechas y paginación.
+   */
   adminList(params: {
     customer?: string;
     status?: string;

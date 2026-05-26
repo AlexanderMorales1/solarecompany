@@ -1,5 +1,11 @@
+/**
+ * @file Página legal: derecho de retracto.
+ * @description Información sobre el plazo de 5 días hábiles en ventas a distancia (Colombia).
+ */
+
 import { Component } from '@angular/core';
 
+/** Política de retracto para consumidores. */
 @Component({
   standalone: true,
   template: `

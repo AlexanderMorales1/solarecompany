@@ -1,3 +1,6 @@
+/**
+ * Promociones activas visibles para la tienda sin autenticación.
+ */
 package com.solare.controller;
 
 import com.solare.dto.discount.DiscountDto;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Consulta de promociones activas sin autenticación ({@code /discounts/public}).
+ */
 @RestController
 @RequestMapping("/discounts/public")
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ public class DiscountPublicController {
 
     private final DiscountService discountService;
 
+    /** Devuelve promociones con bandera activa para mostrar en tienda. */
     @GetMapping
     @Operation(summary = "Promociones activas")
     public ResponseEntity<List<DiscountDto>> active() {

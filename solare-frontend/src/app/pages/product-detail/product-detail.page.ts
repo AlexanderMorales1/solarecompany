@@ -1,3 +1,11 @@
+/**
+ * @file Página de detalle de producto.
+ * @description Muestra un producto por `:id`, selector de cantidad, animación de entrada
+ *   y acciones agregar al carrito / comprar ahora.
+ * @see {@link ../../services/product.service.ts}
+ * @see {@link ../../services/cart.service.ts}
+ */
+
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
 import { Component, NgZone, inject, signal } from '@angular/core';
@@ -8,6 +16,7 @@ import { CopCurrencyPipe } from '../../pipes/cop-currency.pipe';
 import { CartService } from '../../services/cart.service';
 import { ProductService } from '../../services/product.service';
 
+/** Detalle de producto con scroll al contenedor principal al cargar. */
 @Component({
   selector: 'app-product-detail',
   standalone: true,
@@ -41,20 +50,24 @@ export class ProductDetailPage {
     switchMap((id) => this.products.get(id)),
     tap(() => {
       window.scrollTo({ top: 0, behavior: 'auto' });
+      // Espera estabilidad del DOM antes de hacer scroll al bloque principal.
       this.ngZone.onStable.pipe(take(1)).subscribe(() => {
         document.getElementById('product-main')?.scrollIntoView({ behavior: 'auto', block: 'start' });
       });
     }),
   );
 
+  /** Incrementa la cantidad seleccionada. */
   inc(): void {
     this.qty.update((q) => q + 1);
   }
 
+  /** Decrementa cantidad sin bajar de 1. */
   dec(): void {
     this.qty.update((q) => Math.max(1, q - 1));
   }
 
+  /** Añade el producto al carrito con la cantidad actual. */
   addToCart(p: Product): void {
     this.busy.set(true);
     this.msg.set(null);
@@ -71,6 +84,7 @@ export class ProductDetailPage {
     });
   }
 
+  /** Añade al carrito y navega directamente al checkout. */
   buyNow(p: Product): void {
     this.busy.set(true);
     this.msg.set(null);

@@ -1,3 +1,6 @@
+/**
+ * Subida de imágenes al almacenamiento local (carpeta configurable).
+ */
 package com.solare.controller.admin;
 
 import com.solare.dto.media.ImageUploadResponse;
@@ -16,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * Subida de imágenes al almacenamiento local ({@code /admin/media}).
+ */
 @RestController
 @RequestMapping("/admin/media")
 @RequiredArgsConstructor
@@ -26,6 +32,13 @@ public class AdminMediaController {
 
     private final ImageStorageService imageStorageService;
 
+    /**
+     * Sube uno o varios archivos de imagen a la carpeta indicada.
+     *
+     * @param files  archivos multipart
+     * @param folder subcarpeta destino (por defecto {@code products})
+     * @return metadatos y URLs públicas de cada archivo guardado
+     */
     @PostMapping("/images")
     @Operation(summary = "Subir una o múltiples imágenes")
     public ResponseEntity<List<ImageUploadResponse>> uploadImages(

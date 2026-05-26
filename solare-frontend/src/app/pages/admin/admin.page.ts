@@ -1,3 +1,13 @@
+/**
+ * @file Panel de administración.
+ * @description CRUD de productos y banners, subida de imágenes, filtros de inventario y pedidos.
+ * Protegido por `authGuard` y `adminGuard`.
+ * @see {@link ../../services/admin.service.ts}
+ * @see {@link ../../services/product.service.ts}
+ * @see {@link ../../services/order.service.ts}
+ * @see {@link ../../services/category.service.ts}
+ */
+
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,6 +21,7 @@ import { CategoryService } from '../../services/category.service';
 import { OrderService } from '../../services/order.service';
 import { ProductService } from '../../services/product.service';
 
+/** Vista admin: inventario, banners, pedidos y formularios con drag-and-drop de imágenes. */
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -94,6 +105,7 @@ export class AdminPage implements OnInit {
     this.loadCategories();
   }
 
+  /** Carga categorías para el selector del formulario de producto. */
   loadCategories(): void {
     this.loadingCategories.set(true);
     this.categoriesApi.list().subscribe({
@@ -108,6 +120,7 @@ export class AdminPage implements OnInit {
     });
   }
 
+  /** Recarga inventario de productos con filtros y paginación. */
   reload(page = this.currentPage()): void {
     const f = this.filterForm.getRawValue();
     this.loadingInventory.set(true);
@@ -137,6 +150,7 @@ export class AdminPage implements OnInit {
       });
   }
 
+  /** Lista banners del panel admin. */
   reloadBanners(): void {
     this.admin.listBanners().subscribe({
       next: (items) => this.banners.set(items),
@@ -219,6 +233,10 @@ export class AdminPage implements OnInit {
     this.bannerFilePreview.set(URL.createObjectURL(file));
   }
 
+  /**
+   * Crea o actualiza producto: sube imagen nueva si hay archivo, luego persiste payload.
+   * Stock 0 si el producto está marcado como inactivo (`active` false).
+   */
   create(): void {
     if (!this.canSubmitProduct()) return;
     const isEditing = this.editingProductId() !== null;
@@ -234,6 +252,7 @@ export class AdminPage implements OnInit {
     const slugs = [v.categorySlug];
     const stockToSend = v.active ? v.stock : 0;
     this.loadingProductCreate.set(true);
+    // Callback reutilizado tras subir imagen o al editar sin cambiar archivo.
     const persist = (imageUrls: string[]) => {
       const payload = {
         name: v.name,
@@ -279,6 +298,7 @@ export class AdminPage implements OnInit {
     persist(this.existingImageUrls());
   }
 
+  /** Crea o actualiza banner con FormData (imagen opcional en edición). */
   createBanner(): void {
     if (this.bannerForm.invalid) return;
     const file = this.bannerFile();
@@ -459,6 +479,7 @@ export class AdminPage implements OnInit {
     this.productFilePreview.set(null);
   }
 
+  /** Valida si el formulario de producto puede enviarse (creación exige imagen nueva). */
   canSubmitProduct(): boolean {
     if (this.loadingProductCreate()) return false;
     const v = this.form.getRawValue();
@@ -474,6 +495,7 @@ export class AdminPage implements OnInit {
     return requiredBasic;
   }
 
+  /** Muestra notificación temporal que se auto-oculta a los 3 s. */
   private showToast(type: 'success' | 'error' | 'info', text: string): void {
     this.toast.set({ type, text });
     setTimeout(() => {

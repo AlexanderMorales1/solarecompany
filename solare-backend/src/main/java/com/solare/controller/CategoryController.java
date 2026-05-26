@@ -1,3 +1,6 @@
+/**
+ * Listado público de categorías del catálogo.
+ */
 package com.solare.controller;
 
 import com.solare.dto.category.CategoryDto;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Endpoint público de categorías bajo {@code /categories}.
+ */
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /** Lista todas las categorías disponibles para filtros del catálogo. */
     @GetMapping
     @Operation(summary = "Listar categorías")
     public ResponseEntity<List<CategoryDto>> list() {

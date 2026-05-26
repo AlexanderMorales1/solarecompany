@@ -1,3 +1,6 @@
+/**
+ * CRUD de productos reservado a administradores.
+ */
 package com.solare.controller.admin;
 
 import com.solare.dto.product.ProductCreateUpdateDto;
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Alta, actualización y baja de productos ({@code /admin/products}).
+ */
 @RestController
 @RequestMapping("/admin/products")
 @RequiredArgsConstructor
@@ -28,18 +34,21 @@ public class AdminProductController {
 
     private final ProductService productService;
 
+    /** Crea un producto en el catálogo. */
     @PostMapping
     @Operation(summary = "Crear producto")
     public ResponseEntity<ProductDto> create(@Valid @RequestBody ProductCreateUpdateDto dto) {
         return ResponseEntity.ok(productService.create(dto));
     }
 
+    /** Actualiza un producto existente. */
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar producto")
     public ResponseEntity<ProductDto> update(@PathVariable Long id, @Valid @RequestBody ProductCreateUpdateDto dto) {
         return ResponseEntity.ok(productService.update(id, dto));
     }
 
+    /** Elimina un producto por id. */
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar producto")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

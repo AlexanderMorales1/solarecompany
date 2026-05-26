@@ -1,3 +1,10 @@
+/**
+ * @file Página de inicio de sesión.
+ * @description Formulario email/contraseña, recordar email, OAuth Google y fusión del carrito local.
+ * @see {@link ../../services/auth.service.ts}
+ * @see {@link ../../guards/auth.guard.ts} Query `next` tras redirección.
+ */
+
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -5,6 +12,7 @@ import { switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 
+/** Login con redirección post-auth a `next` o inicio. */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -27,6 +35,7 @@ export class LoginPage {
     remember: [!!this.auth.getRememberedEmail()],
   });
 
+  /** Redirige al flujo OAuth2 de Google expuesto por el backend. */
   google(): void {
     this.auth.getGoogleLoginUrl().subscribe({
       next: (r) => {
@@ -36,6 +45,7 @@ export class LoginPage {
     });
   }
 
+  /** Autentica, fusiona carrito local y navega a la URL guardada en `next`. */
   submit(): void {
     if (this.form.invalid) return;
     this.busy.set(true);

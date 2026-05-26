@@ -1,3 +1,9 @@
+/**
+ * Filtro servlet que valida JWT Bearer y establece el contexto de seguridad de Spring.
+ * <p>
+ * Relación: encadenado antes del filtro de usuario en {@link com.solare.config.SecurityConfig}.
+ * </p>
+ */
 package com.solare.security;
 
 import jakarta.servlet.FilterChain;
@@ -16,13 +22,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Ejecuta una vez por petición: si el token es válido, carga {@link SolareUserDetails} por id del claim subject.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    /** Validación y parseo de tokens JWT. */
     private final JwtTokenProvider jwtTokenProvider;
+    /** Carga de {@link SolareUserDetails} por id del token. */
     private final SolareUserDetailsService userDetailsService;
 
+    /**
+     * Extrae token, valida firma/expiración y rellena {@link SecurityContextHolder} antes de continuar la cadena.
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -40,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /** Obtiene el JWT del encabezado {@code Authorization: Bearer ...}. */
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {

@@ -1,3 +1,10 @@
+/**
+ * Configuración web transversal: CORS y servicio estático de archivos subidos.
+ * <p>
+ * Relación: usa {@link SolareProperties} para orígenes CORS y rutas de {@code uploads/}.
+ * Complementa {@link SecurityConfig} (que habilita CORS con {@code Customizer.withDefaults()}).
+ * </p>
+ */
 package com.solare.config;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +26,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final SolareProperties solareProperties;
 
+    /**
+     * Define la política CORS global aplicada a todas las rutas {@code /**}.
+     *
+     * @return fuente de configuración CORS registrada en Spring Security y MVC
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration c = new CorsConfiguration();
@@ -31,6 +43,12 @@ public class WebConfig implements WebMvcConfigurer {
         return source;
     }
 
+    /**
+     * Mapea la URL pública de uploads al directorio físico configurado en propiedades.
+     * Permite servir imágenes de productos sin pasar por un controlador dedicado.
+     *
+     * @param registry registro de manejadores de recursos estáticos de Spring MVC
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         Path uploadPath = Paths.get(solareProperties.getStorage().getUploadDir()).toAbsolutePath().normalize();

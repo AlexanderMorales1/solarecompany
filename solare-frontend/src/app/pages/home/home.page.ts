@@ -1,3 +1,11 @@
+/**
+ * @file Página de inicio (landing).
+ * @description Carrusel de banners activos, productos destacados por marca (Ferrati/Ray-Ban)
+ *   y sección de novedades. Gestiona auto-slide del carrusel cada 5 segundos.
+ * @see {@link ../../services/home-banner.service.ts}
+ * @see {@link ../../services/product.service.ts}
+ */
+
 import { AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -8,6 +16,7 @@ import { CopCurrencyPipe } from '../../pipes/cop-currency.pipe';
 import { HomeBannerService } from '../../services/home-banner.service';
 import { ProductService } from '../../services/product.service';
 
+/** Home con carrusel, destacados y productos recientes. */
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -54,6 +63,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
+  /** Avanza al siguiente banner y reinicia el temporizador automático. */
   protected nextBanner(): void {
     const items = this.banners();
     if (items.length <= 1) return;
@@ -61,6 +71,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.startAutoSlide();
   }
 
+  /** Retrocede un banner en el carrusel circular. */
   protected previousBanner(): void {
     const items = this.banners();
     if (items.length <= 1) return;
@@ -68,12 +79,14 @@ export class HomePage implements OnInit, OnDestroy {
     this.startAutoSlide();
   }
 
+  /** Selecciona un banner por índice (puntos del carrusel). */
   protected setBanner(index: number): void {
     if (index < 0 || index >= this.banners().length) return;
     this.activeBannerIndex.set(index);
     this.startAutoSlide();
   }
 
+  /** URL de imagen del banner activo o imagen de respaldo. */
   protected currentBannerImage(): string {
     const items = this.banners();
     if (items.length === 0) return this.fallbackBanner;
@@ -93,6 +106,7 @@ export class HomePage implements OnInit, OnDestroy {
     );
   }
 
+  /** Inicia rotación automática cada 5 s si hay más de un banner. */
   private startAutoSlide(): void {
     this.stopAutoSlide();
     if (this.banners().length <= 1) return;
@@ -105,6 +119,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.carouselTimer = null;
   }
 
+  /**
+   * Indica si el producto se creó en los últimos 7 días (etiqueta "Nuevo").
+   * @param p Producto con `createdAt` opcional ISO.
+   */
   protected isNewProduct(p: Product): boolean {
     if (!p.createdAt) return false;
     const created = new Date(p.createdAt).getTime();

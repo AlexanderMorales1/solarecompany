@@ -1,5 +1,11 @@
+/**
+ * @file Página legal: términos y condiciones.
+ * @description Texto informativo sobre precios, medios de pago simulados y propiedad intelectual.
+ */
+
 import { Component } from '@angular/core';
 
+/** Términos de uso de la tienda demostrativa. */
 @Component({
   standalone: true,
   template: `

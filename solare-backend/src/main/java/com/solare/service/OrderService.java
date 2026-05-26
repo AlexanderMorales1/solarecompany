@@ -1,3 +1,10 @@
+/**
+ * Servicio de pedidos: checkout desde carrito, historial del usuario y listado admin.
+ * <p>
+ * Relación: {@link com.solare.controller.OrderController}, {@link com.solare.controller.admin.AdminOrderController},
+ * {@link PricingService} y {@link OrderSpecification}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.order.CreateOrderRequest;
@@ -30,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** Convierte líneas de carrito en pedido, descuenta stock y vacía el carrito. */
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -39,6 +47,13 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PricingService pricingService;
 
+    /**
+     * Confirma la compra: valida stock, calcula totales con promociones, persiste pedido PAID y limpia carrito.
+     *
+     * @param user usuario autenticado
+     * @param req  datos de envío y método de pago
+     * @return pedido creado como DTO
+     */
     @Transactional
     public OrderDto checkout(SolareUserDetails user, CreateOrderRequest req) {
         UserEntity u = userRepository.findById(user.getId())
@@ -88,6 +103,7 @@ public class OrderService {
         return toDto(order);
     }
 
+    /** Historial de pedidos del usuario ordenado por fecha descendente. */
     @Transactional(readOnly = true)
     public List<OrderDto> myOrders(SolareUserDetails user) {
         UserEntity u = userRepository.findById(user.getId())
@@ -97,12 +113,21 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Listado paginado para administración: solo estados PAID/SHIPPED y filtros opcionales.
+     *
+     * @param customer texto en nombre o email del cliente
+     * @param status   estado concreto (si no es aprobado, devuelve conjunto vacío)
+     * @param from     fecha inicial inclusive (zona del sistema)
+     * @param to       fecha final inclusive (se convierte a límite exclusivo al día siguiente)
+     */
     @Transactional(readOnly = true)
     public Page<OrderDto> adminOrders(String customer, OrderEntity.OrderStatus status, LocalDate from, LocalDate to, Pageable pageable) {
         Instant fromInstant = from != null ? from.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
         Instant toExclusive = to != null ? to.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
 
         Set<OrderEntity.OrderStatus> approvedStatuses = Set.of(OrderEntity.OrderStatus.PAID, OrderEntity.OrderStatus.SHIPPED);
+        // Si el admin pide un estado no aprobado, la spec devuelve cero filas (conjunto vacío)
         Set<OrderEntity.OrderStatus> statuses = status != null
                 ? (approvedStatuses.contains(status) ? Set.of(status) : Set.of())
                 : approvedStatuses;
@@ -114,6 +139,7 @@ public class OrderService {
         return orderRepository.findAll(spec, pageable).map(this::toDto);
     }
 
+    /** Mapea entidad de pedido y líneas a DTO de respuesta API. */
     private OrderDto toDto(OrderEntity o) {
         List<OrderLineDto> lines = o.getDetails().stream()
                 .map(d -> OrderLineDto.builder()

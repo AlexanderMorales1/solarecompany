@@ -1,3 +1,9 @@
+/**
+ * Servicio de banners de la pantalla principal (home).
+ * <p>
+ * Relación: {@link com.solare.controller.HomeBannerController} y {@link com.solare.controller.admin.AdminHomeBannerController}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.banner.HomeBannerCreateRequest;
@@ -14,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Comparator;
 import java.util.List;
 
+/** CRUD de banners con almacenamiento de imagen vía {@link ImageStorageService}. */
 @Service
 @RequiredArgsConstructor
 public class HomeBannerService {
@@ -21,6 +28,7 @@ public class HomeBannerService {
     private final HomeBannerRepository homeBannerRepository;
     private final ImageStorageService imageStorageService;
 
+    /** Banners activos ordenados para el frontend público. */
     @Transactional(readOnly = true)
     public List<HomeBannerDto> listPublic() {
         return homeBannerRepository.findByActiveTrueOrderByDisplayOrderAscCreatedAtAsc()
@@ -29,6 +37,7 @@ public class HomeBannerService {
                 .toList();
     }
 
+    /** Todos los banners (admin), ordenados por displayOrder y fecha de creación. */
     @Transactional(readOnly = true)
     public List<HomeBannerDto> listAll() {
         return homeBannerRepository.findAll().stream()
@@ -37,6 +46,7 @@ public class HomeBannerService {
                 .toList();
     }
 
+    /** Crea banner subiendo imagen obligatoria a la carpeta {@code banners}. */
     @Transactional
     public HomeBannerDto create(HomeBannerCreateRequest request, MultipartFile imageFile) {
         ImageUploadResponse saved = imageStorageService.saveImage(imageFile, "banners");
@@ -50,6 +60,7 @@ public class HomeBannerService {
         return toDto(homeBannerRepository.save(entity));
     }
 
+    /** Actualización parcial: imagen opcional; solo campos no nulos del request se aplican. */
     @Transactional
     public HomeBannerDto update(Long id, HomeBannerCreateRequest request, MultipartFile imageFile) {
         HomeBannerEntity entity = homeBannerRepository.findById(id)
@@ -73,6 +84,7 @@ public class HomeBannerService {
         return toDto(homeBannerRepository.save(entity));
     }
 
+    /** Elimina banner por id. */
     @Transactional
     public void delete(Long id) {
         if (!homeBannerRepository.existsById(id)) {
@@ -81,6 +93,7 @@ public class HomeBannerService {
         homeBannerRepository.deleteById(id);
     }
 
+    /** Convierte entidad de banner a DTO para la API. */
     private HomeBannerDto toDto(HomeBannerEntity b) {
         return HomeBannerDto.builder()
                 .id(b.getId())

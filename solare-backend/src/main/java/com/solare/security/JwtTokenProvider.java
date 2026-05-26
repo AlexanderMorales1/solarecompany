@@ -1,3 +1,9 @@
+/**
+ * Creación y validación de tokens JWT (JJWT) con claims de id, email y roles.
+ * <p>
+ * Configuración: {@code solare.jwt.secret} y {@code solare.jwt.expiration-ms}.
+ * </p>
+ */
 package com.solare.security;
 
 import io.jsonwebtoken.Claims;
@@ -13,12 +19,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+/**
+ * Proveedor de tokens firmados con HMAC; el subject del JWT es el id del usuario como cadena.
+ */
 @Component
 public class JwtTokenProvider {
 
+    /** Clave HMAC-SHA derivada de {@code solare.jwt.secret}. */
     private final SecretKey key;
+    /** Vida útil del token en milisegundos ({@code solare.jwt.expiration-ms}). */
     private final long expirationMs;
 
+    /**
+     * Inicializa clave HMAC; exige secreto de al menos 32 bytes UTF-8.
+     */
     public JwtTokenProvider(
             @Value("${solare.jwt.secret}") String secret,
             @Value("${solare.jwt.expiration-ms}") long expirationMs) {
@@ -30,6 +44,9 @@ public class JwtTokenProvider {
         this.expirationMs = expirationMs;
     }
 
+    /**
+     * Genera JWT tras login local a partir del {@link Authentication} de Spring.
+     */
     public String createToken(Authentication authentication) {
         SolareUserDetails principal = (SolareUserDetails) authentication.getPrincipal();
         String roles = authentication.getAuthorities().stream()
@@ -47,6 +64,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Genera JWT explícito (p. ej. tras OAuth2) sin pasar por {@link Authentication}.
+     *
+     * @param userId   id del usuario
+     * @param email    correo
+     * @param rolesCsv roles separados por coma
+     */
     public String createTokenForUser(Long userId, String email, String rolesCsv) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
@@ -60,6 +84,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Verifica firma y expiración; devuelve false ante cualquier excepción de parseo.
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
@@ -69,6 +96,9 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * Extrae el id de usuario del claim {@code sub}.
+     */
     public Long getUserId(String token) {
         Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token)

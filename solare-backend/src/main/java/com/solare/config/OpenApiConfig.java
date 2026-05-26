@@ -1,3 +1,10 @@
+/**
+ * Configuración de documentación OpenAPI/Swagger para la API REST.
+ * <p>
+ * Expone la UI en {@code /swagger-ui.html} y define el esquema de seguridad Bearer JWT
+ * para probar endpoints protegidos desde Swagger.
+ * </p>
+ */
 package com.solare.config;
 
 import io.swagger.v3.oas.models.Components;
@@ -11,6 +18,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
+    /**
+     * Bean {@link OpenAPI} con metadatos del proyecto y autenticación HTTP Bearer.
+     *
+     * @return definición OpenAPI registrada en el contexto Spring
+     */
     @Bean
     public OpenAPI solareOpenAPI() {
         final String scheme = "bearerAuth";

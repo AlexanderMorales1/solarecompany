@@ -1,3 +1,9 @@
+/**
+ * Criterios dinámicos JPA para búsqueda y filtrado del catálogo de productos.
+ * <p>
+ * Relación: combinadas en {@link ProductService#search}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.model.entity.BrandEntity;
@@ -8,24 +14,34 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.util.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
+/**
+ * Fábrica de {@link Specification} para {@link ProductEntity}.
+ */
 public final class ProductSpecification {
 
+    /** Constructor privado: clase de utilidad sin instancias. */
     private ProductSpecification() {
     }
 
+    /** Filtro por código de marca; sin efecto si {@code code} es nulo. */
     public static Specification<ProductEntity> brandCode(BrandEntity.BrandCode code) {
         return (root, q, cb) -> code == null ? cb.conjunction()
                 : cb.equal(root.get("brand").get("code"), code);
     }
 
+    /** Filtro por público objetivo (género del catálogo). */
     public static Specification<ProductEntity> gender(ProductEntity.GenderTarget g) {
         return (root, q, cb) -> g == null ? cb.conjunction() : cb.equal(root.get("gender"), g);
     }
 
+    /** Filtro por tipo de producto (prenda, accesorio, etc.). */
     public static Specification<ProductEntity> productType(ProductEntity.ProductType t) {
         return (root, q, cb) -> t == null ? cb.conjunction() : cb.equal(root.get("productType"), t);
     }
 
+    /**
+     * Productos que pertenecen a la categoría con el slug indicado (join interno).
+     */
     public static Specification<ProductEntity> categorySlug(String slug) {
         return (root, q, cb) -> {
             if (slug == null || slug.isBlank()) {
@@ -36,10 +52,17 @@ public final class ProductSpecification {
         };
     }
 
+    /** Filtro por bandera de producto destacado. */
     public static Specification<ProductEntity> featured(Boolean featured) {
         return (root, q, cb) -> featured == null ? cb.conjunction() : cb.equal(root.get("featured"), featured);
     }
 
+    /**
+     * Búsqueda de texto en nombre, descripción, marca y categorías (OR de predicados).
+     * <p>
+     * Activa {@code distinct} porque los joins a categorías pueden duplicar filas.
+     * </p>
+     */
     public static Specification<ProductEntity> searchText(String query) {
         return (root, q, cb) -> {
             if (!StringUtils.hasText(query)) {

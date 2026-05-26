@@ -1,3 +1,6 @@
+/**
+ * Listado paginado de pedidos para backoffice (filtros por cliente, estado y fechas).
+ */
 package com.solare.controller.admin;
 
 import com.solare.dto.order.OrderDto;
@@ -20,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
+/**
+ * Listado paginado de pedidos para backoffice ({@code /admin/orders}).
+ */
 @RestController
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
@@ -30,6 +36,15 @@ public class AdminOrderController {
 
     private final OrderService orderService;
 
+    /**
+     * Pedidos en estados PAID/SHIPPED con filtros opcionales por cliente, estado y rango de fechas.
+     *
+     * @param customer texto en nombre o email del cliente
+     * @param status   estado del pedido (solo PAID o SHIPPED devuelven filas)
+     * @param from     fecha inicial inclusive
+     * @param to       fecha final inclusive
+     * @param pageable paginación
+     */
     @GetMapping
     @Operation(summary = "Listar pedidos aprobados")
     public ResponseEntity<Page<OrderDto>> list(

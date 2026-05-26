@@ -1,13 +1,24 @@
+/**
+ * @file Servicio de catálogo de productos.
+ * @description Consultas paginadas, detalle, destacados por marca y recientes.
+ * @see {@link ../models/product.model.ts}
+ */
+
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PageResponse, Product } from '../models/product.model';
 
+/** Acceso al API público `/products`. */
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private readonly http = inject(HttpClient);
 
+  /**
+   * Lista productos con filtros y paginación.
+   * @param params Búsqueda, marca, género, tipo, categoría, destacados, página y orden.
+   */
   list(params: {
     q?: string;
     brand?: string;
@@ -32,14 +43,20 @@ export class ProductService {
     return this.http.get<PageResponse<Product>>(`${environment.apiUrl}/products`, { params: hp });
   }
 
+  /** Detalle de un producto por ID. */
   get(id: number): Observable<Product> {
     return this.http.get<Product>(`${environment.apiUrl}/products/${id}`);
   }
 
+  /** Productos destacados de una marca (Ferrati o Ray-Ban). */
   featuredByBrand(brand: 'FERRATI' | 'RAYBAN'): Observable<Product[]> {
     return this.http.get<Product[]>(`${environment.apiUrl}/products/featured/${brand}`);
   }
 
+  /**
+   * Productos más recientes (primera página).
+   * @param limit Cantidad máxima de ítems (por defecto 8).
+   */
   recent(limit = 8): Observable<PageResponse<Product>> {
     return this.http.get<PageResponse<Product>>(`${environment.apiUrl}/products/recent`, {
       params: new HttpParams().set('page', '0').set('size', String(limit)),

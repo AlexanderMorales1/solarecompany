@@ -1,3 +1,9 @@
+/**
+ * Servicio de carrito de compras por usuario autenticado.
+ * <p>
+ * Relación: {@link com.solare.controller.CartController}, {@link PricingService} y {@link ProductMapper}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.cart.AddToCartRequest;
@@ -22,6 +28,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Mantiene líneas de carrito y calcula subtotales con reglas de precio. */
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -32,6 +39,7 @@ public class CartService {
     private final ProductMapper productMapper;
     private final PricingService pricingService;
 
+    /** Devuelve ítems del carrito y subtotal en COP. */
     @Transactional(readOnly = true)
     public CartSummaryDto getCart(SolareUserDetails user) {
         UserEntity u = loadUser(user.getId());
@@ -50,6 +58,10 @@ public class CartService {
                 .build();
     }
 
+    /**
+     * Agrega cantidad al carrito (fusiona con línea existente del mismo producto).
+     * Valida stock disponible antes de persistir.
+     */
     @Transactional
     public CartSummaryDto add(SolareUserDetails user, AddToCartRequest req) {
         UserEntity u = loadUser(user.getId());
@@ -72,6 +84,7 @@ public class CartService {
         return getCart(user);
     }
 
+    /** Actualiza cantidad de un ítem; verifica propiedad del ítem y stock. */
     @Transactional
     public CartSummaryDto update(SolareUserDetails user, Long cartItemId, UpdateCartItemRequest req) {
         UserEntity u = loadUser(user.getId());
@@ -88,6 +101,7 @@ public class CartService {
         return getCart(user);
     }
 
+    /** Elimina un ítem del carrito del usuario. */
     @Transactional
     public CartSummaryDto remove(SolareUserDetails user, Long cartItemId) {
         UserEntity u = loadUser(user.getId());
@@ -100,16 +114,19 @@ public class CartService {
         return getCart(user);
     }
 
+    /** Vacía todas las líneas del carrito (p. ej. tras checkout). */
     @Transactional
     public void clear(SolareUserDetails user) {
         UserEntity u = loadUser(user.getId());
         cartRepository.deleteByUser(u);
     }
 
+    /** Resuelve usuario por id o lanza 404. */
     private UserEntity loadUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
+    /** Convierte fila de carrito a DTO con producto embebido. */
     private CartItemDto toItemDto(CartEntity row) {
         return CartItemDto.builder()
                 .cartItemId(row.getId())

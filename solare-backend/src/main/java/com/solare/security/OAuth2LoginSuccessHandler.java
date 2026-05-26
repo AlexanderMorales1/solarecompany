@@ -1,3 +1,9 @@
+/**
+ * Manejador post-login OAuth2 (Google): vincula o crea usuario y redirige al frontend con JWT.
+ * <p>
+ * Relación: configurado en {@link com.solare.config.SecurityConfig} para el flujo OAuth2.
+ * </p>
+ */
 package com.solare.security;
 
 import com.solare.config.SolareProperties;
@@ -22,6 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Tras autenticación Google exitosa, emite JWT y redirige a {@code /auth/callback?token=...} en el SPA.
+ */
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -31,6 +40,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final JwtTokenProvider jwtTokenProvider;
     private final SolareProperties solareProperties;
 
+    /**
+     * Resuelve o crea usuario Google, emite JWT y redirige al SPA con el token en query.
+     *
+     * @param request  petición HTTP del callback OAuth2
+     * @param response respuesta para redirección
+     * @param authentication principal OAuth2 autenticado
+     */
     @Override
     @Transactional
     public void onAuthenticationSuccess(
@@ -44,6 +60,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String given = attrs.get("given_name") != null ? String.valueOf(attrs.get("given_name")) : "";
         String family = attrs.get("family_name") != null ? String.valueOf(attrs.get("family_name")) : "";
 
+        // Prioridad: usuario Google existente → vincular cuenta local por email → crear nuevo
         UserEntity user = userRepository.findByProviderAndProviderId("GOOGLE", sub)
                 .orElseGet(() -> userRepository.findByEmail(email.toLowerCase().trim())
                         .map(existing -> linkGoogle(existing, sub))
@@ -58,12 +75,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         getRedirectStrategy().sendRedirect(request, response, target);
     }
 
+    /** Asocia proveedor GOOGLE a un usuario que ya existía (p. ej. registro local previo). */
     private UserEntity linkGoogle(UserEntity existing, String sub) {
         existing.setProvider("GOOGLE");
         existing.setProviderId(sub);
         return userRepository.save(existing);
     }
 
+    /** Alta de usuario OAuth sin contraseña local. */
     private UserEntity createGoogleUser(String email, String first, String last, String sub) {
         RoleEntity userRole = roleRepository.findByName(RoleEntity.RoleName.ROLE_USER)
                 .orElseThrow();

@@ -1,3 +1,6 @@
+/**
+ * CRUD de promociones y descuentos (panel admin).
+ */
 package com.solare.controller.admin;
 
 import com.solare.dto.discount.DiscountDto;
@@ -21,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Mantenimiento de promociones ({@code /admin/discounts}, rol ADMIN).
+ */
 @RestController
 @RequestMapping("/admin/discounts")
 @RequiredArgsConstructor
@@ -31,24 +37,28 @@ public class AdminDiscountController {
 
     private final DiscountService discountService;
 
+    /** Lista todas las promociones (activas e inactivas). */
     @GetMapping
     @Operation(summary = "Listar todas las promociones")
     public ResponseEntity<List<DiscountDto>> list() {
         return ResponseEntity.ok(discountService.listAll());
     }
 
+    /** Crea una nueva promoción. */
     @PostMapping
     @Operation(summary = "Crear promoción")
     public ResponseEntity<DiscountDto> create(@Valid @RequestBody DiscountUpsertDto dto) {
         return ResponseEntity.ok(discountService.create(dto));
     }
 
+    /** Actualiza una promoción existente. */
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar promoción")
     public ResponseEntity<DiscountDto> update(@PathVariable Long id, @Valid @RequestBody DiscountUpsertDto dto) {
         return ResponseEntity.ok(discountService.update(id, dto));
     }
 
+    /** Elimina una promoción por id. */
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar promoción")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

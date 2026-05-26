@@ -1,9 +1,17 @@
+/**
+ * @file Página de callback OAuth2.
+ * @description Recibe `token` en query string tras login con Google, lo persiste y fusiona carrito local.
+ * @see {@link ../../services/auth.service.ts}
+ * @see {@link ../../app.routes.ts} Ruta `/auth/callback`.
+ */
+
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 import { switchMap } from 'rxjs';
 
+/** Pantalla transitoria mientras se completa el inicio de sesión OAuth. */
 @Component({
   selector: 'app-auth-callback',
   standalone: true,

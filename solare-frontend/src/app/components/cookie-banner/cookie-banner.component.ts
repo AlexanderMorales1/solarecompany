@@ -1,8 +1,16 @@
+/**
+ * @file Banner de consentimiento de cookies.
+ * @description Muestra aviso hasta que el usuario acepta; persiste la decisión en `localStorage`.
+ * Enlaza a la política de privacidad. Plantilla inline en el decorador.
+ * @see {@link ../../app.ts}
+ */
+
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 const KEY = 'solare_cookies_accepted';
 
+/** Diálogo fijo inferior con botón de aceptación única. */
 @Component({
   selector: 'app-cookie-banner',
   standalone: true,
@@ -33,8 +41,10 @@ const KEY = 'solare_cookies_accepted';
   imports: [RouterLink],
 })
 export class CookieBannerComponent {
+  /** Visible solo si no existe la clave de aceptación en almacenamiento local. */
   protected readonly visible = signal(typeof localStorage !== 'undefined' && !localStorage.getItem(KEY));
 
+  /** Registra el consentimiento y oculta el banner. */
   accept(): void {
     localStorage.setItem(KEY, '1');
     this.visible.set(false);

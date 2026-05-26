@@ -1,5 +1,14 @@
+/**
+ * @file Modelos de pedidos y checkout.
+ * @description Tipos para crear pedidos, listar historial y administración.
+ * @see {@link ../services/order.service.ts}
+ * @see {@link ../pages/checkout/checkout.page.ts}
+ */
+
+/** Medios de pago soportados (simulados o integraciones futuras). */
 export type PaymentMethod = 'SISTECREDITO' | 'ADDI' | 'BOLD' | 'WOMPI';
 
+/** Cuerpo enviado a `POST /orders/checkout` con datos de envío y pago. */
 export interface CheckoutPayload {
   paymentMethod: PaymentMethod;
   fullName: string;
@@ -12,6 +21,7 @@ export interface CheckoutPayload {
   address: string;
 }
 
+/** Línea de detalle dentro de un pedido confirmado. */
 export interface OrderLine {
   productId: number;
   productName: string;
@@ -19,6 +29,7 @@ export interface OrderLine {
   unitPriceCop: number;
 }
 
+/** Pedido completo con totales, estado y dirección de entrega. */
 export interface Order {
   id: number;
   totalCop: number;

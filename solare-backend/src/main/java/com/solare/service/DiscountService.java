@@ -1,3 +1,9 @@
+/**
+ * Servicio de promociones y descuentos (CRUD admin y listado público activo).
+ * <p>
+ * Relación: {@link com.solare.controller.admin.AdminDiscountController} y {@link com.solare.controller.DiscountPublicController}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.discount.DiscountDto;
@@ -12,12 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Persistencia y mapeo de entidades {@link com.solare.model.entity.DiscountEntity}. */
 @Service
 @RequiredArgsConstructor
 public class DiscountService {
 
     private final DiscountRepository discountRepository;
 
+    /** Promociones con bandera activa (vista tienda). */
     @Transactional(readOnly = true)
     public List<DiscountDto> listActive() {
         return discountRepository.findByActiveTrue().stream()
@@ -25,6 +33,7 @@ public class DiscountService {
                 .collect(Collectors.toList());
     }
 
+    /** Todas las promociones (panel admin). */
     @Transactional(readOnly = true)
     public List<DiscountDto> listAll() {
         return discountRepository.findAll().stream()
@@ -32,12 +41,14 @@ public class DiscountService {
                 .collect(Collectors.toList());
     }
 
+    /** Alta de promoción. */
     @Transactional
     public DiscountDto create(DiscountUpsertDto dto) {
         DiscountEntity e = map(dto);
         return toDto(discountRepository.save(e));
     }
 
+    /** Actualización de promoción existente. */
     @Transactional
     public DiscountDto update(Long id, DiscountUpsertDto dto) {
         DiscountEntity e = discountRepository.findById(id)
@@ -46,6 +57,7 @@ public class DiscountService {
         return toDto(discountRepository.save(e));
     }
 
+    /** Borrado físico de promoción. */
     @Transactional
     public void delete(Long id) {
         if (!discountRepository.existsById(id)) {
@@ -54,12 +66,14 @@ public class DiscountService {
         discountRepository.deleteById(id);
     }
 
+    /** Crea entidad nueva a partir del DTO de alta/actualización. */
     private DiscountEntity map(DiscountUpsertDto dto) {
         DiscountEntity e = new DiscountEntity();
         apply(dto, e);
         return e;
     }
 
+    /** Copia campos editables del DTO a la entidad. */
     private void apply(DiscountUpsertDto dto, DiscountEntity e) {
         e.setCode(dto.getCode());
         e.setName(dto.getName());
@@ -70,6 +84,7 @@ public class DiscountService {
         e.setEndsAt(dto.getEndsAt());
     }
 
+    /** Mapeo entidad → DTO de respuesta. */
     private DiscountDto toDto(DiscountEntity e) {
         return DiscountDto.builder()
                 .id(e.getId())

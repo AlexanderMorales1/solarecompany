@@ -1,5 +1,12 @@
+/**
+ * @file Página legal: política de privacidad.
+ * @description Contenido estático sobre Habeas Data, uso de datos y cookies (proyecto demostrativo).
+ * @see {@link ../../components/cookie-banner/cookie-banner.component.ts}
+ */
+
 import { Component } from '@angular/core';
 
+/** Artículo HTML inline de política de privacidad. */
 @Component({
   standalone: true,
   template: `

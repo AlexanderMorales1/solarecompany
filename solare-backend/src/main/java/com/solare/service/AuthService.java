@@ -1,3 +1,9 @@
+/**
+ * Servicio de autenticación local: registro, login JWT, perfil y recuperación de contraseña.
+ * <p>
+ * Relación: usa {@link com.solare.security.JwtTokenProvider} y {@link com.solare.controller.AuthController}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.auth.AuthResponse;
@@ -29,6 +35,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Gestiona el ciclo de vida de credenciales locales (no OAuth2).
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,6 +49,12 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Registra un usuario con proveedor LOCAL, asigna ROLE_USER y devuelve JWT.
+     *
+     * @param req datos de registro
+     * @return token y metadatos del usuario
+     */
     @Transactional
     public AuthResponse register(RegisterRequest req) {
         if (userRepository.findByEmail(req.getEmail().toLowerCase().trim()).isPresent()) {
@@ -62,12 +77,24 @@ public class AuthService {
         return buildAuthResponse(auth);
     }
 
+    /**
+     * Autentica por correo y contraseña y emite JWT.
+     *
+     * @param req credenciales
+     * @return respuesta con token Bearer
+     */
     public AuthResponse login(LoginRequest req) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail().toLowerCase().trim(), req.getPassword()));
         return buildAuthResponse(auth);
     }
 
+    /**
+     * Devuelve el perfil del usuario autenticado en la petición actual.
+     *
+     * @param user principal extraído del JWT
+     * @return DTO de perfil
+     */
     @Transactional(readOnly = true)
     public UserProfileDto me(SolareUserDetails user) {
         UserEntity u = userRepository.findById(user.getId())
@@ -81,9 +108,18 @@ public class AuthService {
                 .build();
     }
 
+    /**
+     * Genera token de restablecimiento solo para cuentas LOCAL (silencioso si el correo no existe).
+     * <p>
+     * En desarrollo el token se escribe en logs; en producción debería enviarse por correo.
+     * </p>
+     *
+     * @param req correo solicitado
+     */
     @Transactional
     public void forgotPassword(ForgotPasswordRequest req) {
         userRepository.findByEmail(req.getEmail().toLowerCase().trim()).ifPresent(user -> {
+            // OAuth2 no usa contraseña local: se ignora la solicitud sin error explícito
             if (!"LOCAL".equalsIgnoreCase(user.getProvider())) {
                 return;
             }
@@ -95,6 +131,11 @@ public class AuthService {
         });
     }
 
+    /**
+     * Aplica nueva contraseña si el token de recuperación es válido y no ha expirado.
+     *
+     * @param req token y nueva contraseña
+     */
     @Transactional
     public void resetPassword(ResetPasswordRequest req) {
         UserEntity user = userRepository.findByResetToken(req.getToken())
@@ -108,6 +149,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    /** Construye la respuesta de autenticación con JWT y roles del usuario. */
     private AuthResponse buildAuthResponse(Authentication auth) {
         SolareUserDetails principal = (SolareUserDetails) auth.getPrincipal();
         String token = jwtTokenProvider.createToken(auth);

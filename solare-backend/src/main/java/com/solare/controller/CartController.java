@@ -1,3 +1,9 @@
+/**
+ * API REST del carrito de compras (usuario autenticado).
+ * <p>
+ * Relación: {@link com.solare.service.CartService}.
+ * </p>
+ */
 package com.solare.controller;
 
 import com.solare.dto.cart.AddToCartRequest;
@@ -21,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Operaciones del carrito del usuario autenticado bajo {@code /cart}.
+ */
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
@@ -30,12 +39,14 @@ public class CartController {
 
     private final CartService cartService;
 
+    /** Devuelve ítems y subtotal del carrito actual. */
     @GetMapping
     @Operation(summary = "Ver carrito")
     public ResponseEntity<CartSummaryDto> get(@AuthenticationPrincipal SolareUserDetails user) {
         return ResponseEntity.ok(cartService.getCart(user));
     }
 
+    /** Agrega o incrementa cantidad de un producto en el carrito. */
     @PostMapping("/items")
     @Operation(summary = "Agregar al carrito")
     public ResponseEntity<CartSummaryDto> add(
@@ -53,6 +64,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.add(user, req));
     }
 
+    /** Actualiza la cantidad de un ítem existente del carrito. */
     @PutMapping("/items/{cartItemId}")
     @Operation(summary = "Actualizar cantidad")
     public ResponseEntity<CartSummaryDto> update(
@@ -62,6 +74,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.update(user, cartItemId, req));
     }
 
+    /** Elimina un ítem del carrito por su identificador de línea. */
     @DeleteMapping("/items/{cartItemId}")
     @Operation(summary = "Eliminar ítem")
     public ResponseEntity<CartSummaryDto> remove(

@@ -1,3 +1,9 @@
+/**
+ * Mapeo de {@link com.solare.model.entity.ProductEntity} a {@link com.solare.dto.product.ProductDto}.
+ * <p>
+ * Normaliza URLs de imágenes relativas al prefijo público de la API local.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.product.ProductDto;
@@ -6,9 +12,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+/** Componente Spring sin estado para transformación entidad → DTO. */
 @Component
 public class ProductMapper {
 
+    /**
+     * Convierte producto a DTO; rutas de imagen no absolutas se prefijan con el host de desarrollo.
+     *
+     * @param p entidad JPA (puede ser null)
+     * @return DTO o null si la entidad es null
+     */
     public ProductDto toDto(ProductEntity p) {
         if (p == null) {
             return null;
@@ -31,6 +44,7 @@ public class ProductMapper {
                         p.getImageUrls() != null
                                 ? p.getImageUrls().stream()
                                 .map(img -> {
+                                    // URLs ya absolutas (CDN o externas) se dejan intactas
                                     if (img.startsWith("http")) {
                                         return img;
                                     }

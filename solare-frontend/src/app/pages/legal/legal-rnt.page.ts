@@ -1,5 +1,11 @@
+/**
+ * @file Página legal: información comercial y tributaria (RNT / NIT).
+ * @description Placeholder para datos del comerciante requeridos en e-commerce en Colombia.
+ */
+
 import { Component } from '@angular/core';
 
+/** Información tributaria de referencia (completar antes de producción). */
 @Component({
   standalone: true,
   template: `

@@ -1,3 +1,9 @@
+/**
+ * API REST de pedidos del cliente autenticado (checkout e historial).
+ * <p>
+ * Relación: {@link com.solare.service.OrderService}. Requiere JWT en todas las rutas.
+ * </p>
+ */
 package com.solare.controller;
 
 import com.solare.dto.order.CreateOrderRequest;
@@ -19,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Checkout e historial de pedidos del cliente autenticado ({@code /orders}).
+ */
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -28,6 +37,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    /** Confirma la compra desde el carrito y crea el pedido. */
     @PostMapping("/checkout")
     @Operation(summary = "Confirmar compra desde el carrito")
     public ResponseEntity<OrderDto> checkout(
@@ -36,6 +46,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.checkout(user, req));
     }
 
+    /** Historial de pedidos del usuario autenticado. */
     @GetMapping("/mine")
     @Operation(summary = "Mis pedidos")
     public ResponseEntity<List<OrderDto>> mine(@AuthenticationPrincipal SolareUserDetails user) {

@@ -1,3 +1,10 @@
+/**
+ * @file Página de catálogo / tienda.
+ * @description Lista paginada de productos sincronizada con query params (filtros y búsqueda).
+ * @see {@link ../../services/product.service.ts}
+ * @see {@link ../../app.routes.ts} Ruta `/tienda`.
+ */
+
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -8,6 +15,7 @@ import { PageResponse, Product } from '../../models/product.model';
 import { CopCurrencyPipe } from '../../pipes/cop-currency.pipe';
 import { ProductService } from '../../services/product.service';
 
+/** Catálogo con formulario de filtros y paginación vía URL. */
 @Component({
   selector: 'app-catalog',
   standalone: true,
@@ -29,6 +37,7 @@ export class CatalogPage {
     sort: [''],
   });
 
+  /** Stream de página de productos derivado de los query params de la ruta. */
   protected readonly page$: Observable<PageResponse<Product>> = this.route.queryParamMap.pipe(
     tap((q) => {
       this.filtersForm.patchValue(
@@ -59,6 +68,7 @@ export class CatalogPage {
 
   protected readonly currentPage$ = this.route.queryParamMap.pipe(map((q) => Number(q.get('page') ?? '0')));
 
+  /** Aplica filtros del formulario y reinicia a la página 0. */
   applyFilters(): void {
     const v = this.filtersForm.getRawValue();
     void this.router.navigate(['/tienda'], {
@@ -75,6 +85,7 @@ export class CatalogPage {
     });
   }
 
+  /** Limpia filtros y restablece la URL del catálogo. */
   clearFilters(): void {
     this.filtersForm.reset({ q: '', brand: '', gender: '', type: '', category: '', sort: '' });
     void this.router.navigate(['/tienda'], {
@@ -83,23 +94,28 @@ export class CatalogPage {
     });
   }
 
-    goToPage(page: number): void {
-      if (page < 0) return;
-      void this.router.navigate(['/tienda'], {
-        queryParams: { page },
-        queryParamsHandling: 'merge',
-      });
+  /** Cambia la página manteniendo el resto de query params. */
+  goToPage(page: number): void {
+    if (page < 0) return;
+    void this.router.navigate(['/tienda'], {
+      queryParams: { page },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  /**
+   * Resuelve la URL absoluta de una imagen de producto.
+   * Rutas relativas del API se prefijan con el host de desarrollo.
+   */
+  getImageUrl(image: string): string {
+    if (!image) {
+      return 'https://via.placeholder.com/300x300?text=No+Image';
     }
 
-    getImageUrl(image: string): string {
-      if (!image) {
-        return 'https://via.placeholder.com/300x300?text=No+Image';
-      }
-
-      if (image.startsWith('http')) {
-        return image;
-      }
-
-      return `http://localhost:8080/api${image}`;
+    if (image.startsWith('http')) {
+      return image;
     }
+
+    return `http://localhost:8080/api${image}`;
+  }
 }

@@ -1,3 +1,12 @@
+/**
+ * @file Servicio de carrito de compras.
+ * @description Unifica carrito en servidor (usuario logueado) y carrito local en `localStorage`
+ *   para invitados. Notifica cambios vía `cartChanged` y fusiona al iniciar sesión.
+ * @see {@link ../models/cart.model.ts}
+ * @see {@link ../utils/pricing.util.ts}
+ * @see {@link ./auth.service.ts}
+ */
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, concatMap, from, last, map, of, tap } from 'rxjs';
@@ -9,11 +18,13 @@ import { AuthService } from './auth.service';
 
 const LOCAL_KEY = 'solare_local_cart';
 
+/** Entrada del carrito guardada localmente con snapshot del producto. */
 export interface LocalCartEntry {
   product: Product;
   quantity: number;
 }
 
+/** Orquestación del carrito híbrido local/servidor. */
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly http = inject(HttpClient);
@@ -24,10 +35,12 @@ export class CartService {
   /** Emite cuando el contenido del carrito cambia (local o servidor). */
   readonly cartChanged = this.cartChangedSubject.asObservable();
 
+  /** Notifica a suscriptores (p. ej. navbar) que el carrito cambió. */
   private notifyCartChanged(): void {
     this.cartChangedSubject.next();
   }
 
+  /** Obtiene el resumen del carrito según el estado de autenticación. */
   getCart(): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
       return this.http.get<CartSummary>(`${environment.apiUrl}/cart`);
@@ -35,6 +48,7 @@ export class CartService {
     return of(this.readLocalSummary());
   }
 
+  /** Añade cantidad de un producto al carrito. */
   addProduct(product: Product, quantity: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
       return this.http
@@ -49,6 +63,10 @@ export class CartService {
     return of(this.readLocalSummary());
   }
 
+  /**
+   * Actualiza la cantidad de una línea.
+   * En modo local, `cartItemId` es el índice del array persistido.
+   */
   updateQuantity(cartItemId: number, quantity: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
       return this.http
@@ -67,6 +85,7 @@ export class CartService {
     return of(this.readLocalSummary());
   }
 
+  /** Elimina una línea del carrito por ID (servidor) o índice (local). */
   removeLine(cartItemId: number): Observable<CartSummary> {
     if (this.auth.isLoggedIn()) {
       return this.http
@@ -79,12 +98,15 @@ export class CartService {
     return of(this.readLocalSummary());
   }
 
-  /** Tras login: sube ítems locales al carrito del servidor. */
+  /**
+   * Tras login: sube ítems locales al carrito del servidor en serie y limpia almacenamiento local.
+   */
   mergeLocalToServer(): Observable<void> {
     const entries = this.readLocal();
     if (!this.auth.isLoggedIn() || entries.length === 0) {
       return of(undefined);
     }
+    // concatMap evita condiciones de carrera al fusionar varias líneas.
     return from(entries).pipe(
       concatMap((e) =>
         this.http.post<CartSummary>(`${environment.apiUrl}/cart/items`, {
@@ -99,6 +121,7 @@ export class CartService {
     );
   }
 
+  /** Lee el carrito local desde `localStorage`; devuelve array vacío si falla el parseo. */
   private readLocal(): LocalCartEntry[] {
     try {
       const raw = localStorage.getItem(LOCAL_KEY);
@@ -117,6 +140,7 @@ export class CartService {
     localStorage.removeItem(LOCAL_KEY);
   }
 
+  /** Incrementa cantidad si el producto ya existe; respeta stock máximo. */
   private upsertLocal(product: Product, quantity: number): void {
     const entries = this.readLocal();
     const found = entries.find((e) => e.product.id === product.id);
@@ -129,6 +153,7 @@ export class CartService {
     this.writeLocal(entries);
   }
 
+  /** Construye un `CartSummary` compatible con el API usando índices como `cartItemId`. */
   private readLocalSummary(): CartSummary {
     const entries = this.readLocal();
     const items = entries.map((e, index) => ({

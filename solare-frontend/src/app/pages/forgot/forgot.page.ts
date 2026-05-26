@@ -1,8 +1,15 @@
+/**
+ * @file Página de recuperación de contraseña.
+ * @description Solicita al backend el envío de instrucciones por email (flujo simulado/demo).
+ * @see {@link ../../services/auth.service.ts}
+ */
+
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
+/** Formulario de email para `forgot-password`. */
 @Component({
   selector: 'app-forgot',
   standalone: true,
@@ -20,6 +27,7 @@ export class ForgotPage {
     email: ['', [Validators.required, Validators.email]],
   });
 
+  /** Envía la solicitud y muestra estado de confirmación sin revelar si el email existe. */
   submit(): void {
     if (this.form.invalid) return;
     this.error.set(null);

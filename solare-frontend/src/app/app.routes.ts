@@ -1,7 +1,16 @@
+/**
+ * @file Tabla de rutas de la SPA Solare.
+ * @description Define rutas públicas, legales, autenticación y áreas protegidas con
+ *   `authGuard` y `adminGuard`. Las páginas se cargan con lazy loading (`loadComponent`).
+ * @see {@link ./guards/auth.guard.ts} Rutas que exigen sesión.
+ * @see {@link ./guards/admin.guard.ts} Panel de administración.
+ */
+
 import { Routes } from '@angular/router';
 import { adminGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
 
+/** Rutas principales de la tienda y contenido legal. */
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage) },
   { path: 'tienda', loadComponent: () => import('./pages/catalog/catalog.page').then((m) => m.CatalogPage) },

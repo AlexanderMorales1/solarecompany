@@ -1,3 +1,9 @@
+/**
+ * @file Página de registro de usuario.
+ * @description Crea cuenta, persiste sesión y fusiona carrito local al igual que login.
+ * @see {@link ../../services/auth.service.ts}
+ */
+
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -5,6 +11,7 @@ import { switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 
+/** Formulario de registro con redirección al inicio tras éxito. */
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -27,6 +34,7 @@ export class RegisterPage {
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
+  /** Envía registro y navega a `/` si todo es correcto. */
   submit(): void {
     if (this.form.invalid) return;
     this.busy.set(true);

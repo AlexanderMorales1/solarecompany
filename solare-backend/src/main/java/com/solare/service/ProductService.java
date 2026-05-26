@@ -1,3 +1,10 @@
+/**
+ * Servicio de catálogo de productos: búsqueda filtrada, CRUD y acceso a entidad JPA.
+ * <p>
+ * Relación: usa {@link ProductSpecification}, {@link ProductMapper} y repositorios de marca/categoría/descuento;
+ * expuesto por {@link com.solare.controller.ProductController} y {@link com.solare.controller.admin.AdminProductController}.
+ * </p>
+ */
 package com.solare.service;
 
 import com.solare.dto.product.ProductCreateUpdateDto;
@@ -24,6 +31,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Orquesta operaciones de producto: listados públicos paginados y mantenimiento administrativo.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -34,6 +44,18 @@ public class ProductService {
     private final DiscountRepository discountRepository;
     private final ProductMapper productMapper;
 
+    /**
+     * Busca productos aplicando filtros opcionales combinados con especificaciones JPA.
+     *
+     * @param brand        código de marca (opcional)
+     * @param gender       público objetivo (opcional)
+     * @param type         tipo de prenda/accesorio (opcional)
+     * @param categorySlug slug de categoría (opcional)
+     * @param query        texto libre en nombre, descripción, marca o categoría (opcional)
+     * @param featured     si solo destacados (opcional)
+     * @param pageable     paginación y orden
+     * @return página de DTOs de producto
+     */
     @Transactional(readOnly = true)
     public Page<ProductDto> search(
             BrandEntity.BrandCode brand,
@@ -52,6 +74,13 @@ public class ProductService {
         return productRepository.findAll(spec, pageable).map(productMapper::toDto);
     }
 
+    /**
+     * Obtiene el detalle público de un producto por identificador.
+     *
+     * @param id clave primaria del producto
+     * @return DTO del producto
+     * @throws com.solare.exception.ResourceNotFoundException si no existe
+     */
     @Transactional(readOnly = true)
     public ProductDto getById(Long id) {
         return productRepository.findById(id)
@@ -59,6 +88,12 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
     }
 
+    /**
+     * Lista productos marcados como destacados para una marca concreta.
+     *
+     * @param code código de marca del catálogo
+     * @return lista de productos destacados
+     */
     @Transactional(readOnly = true)
     public List<ProductDto> featuredByBrand(BrandEntity.BrandCode code) {
         BrandEntity brand = brandRepository.findByCode(code)
@@ -68,12 +103,25 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Crea un producto nuevo a partir del DTO de administración.
+     *
+     * @param dto datos de alta
+     * @return producto persistido como DTO
+     */
     @Transactional
     public ProductDto create(ProductCreateUpdateDto dto) {
         ProductEntity e = mapNew(dto);
         return productMapper.toDto(productRepository.save(e));
     }
 
+    /**
+     * Actualiza un producto existente.
+     *
+     * @param id  identificador del producto
+     * @param dto campos a sobrescribir
+     * @return producto actualizado como DTO
+     */
     @Transactional
     public ProductDto update(Long id, ProductCreateUpdateDto dto) {
         ProductEntity e = productRepository.findById(id)
@@ -82,6 +130,11 @@ public class ProductService {
         return productMapper.toDto(productRepository.save(e));
     }
 
+    /**
+     * Elimina un producto por identificador.
+     *
+     * @param id clave primaria
+     */
     @Transactional
     public void delete(Long id) {
         if (!productRepository.existsById(id)) {
@@ -90,18 +143,28 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
+    /**
+     * Carga la entidad JPA (uso interno de otros servicios, p. ej. carrito o pedidos).
+     *
+     * @param id identificador del producto
+     * @return entidad persistida
+     */
     @Transactional
     public ProductEntity getEntity(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
     }
 
+    /** Instancia una entidad nueva y aplica el DTO de creación/actualización. */
     private ProductEntity mapNew(ProductCreateUpdateDto dto) {
         ProductEntity e = new ProductEntity();
         apply(dto, e);
         return e;
     }
 
+    /**
+     * Mapea campos del DTO a la entidad, resolviendo marca, descuento y categorías por slug.
+     */
     private void apply(ProductCreateUpdateDto dto, ProductEntity e) {
         BrandEntity brand = brandRepository.findByCode(dto.getBrandCode())
                 .orElseThrow(() -> new BadRequestException("Marca inválida"));
